@@ -1,0 +1,15 @@
+{
+  "name": "shaqsiyad-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for the Shaqsiyad API: give AI agents fictional people with faces, ethnicity, faith, careers and connections.",
+  "type": "module",
+  "bin": { "shaqsiyad-mcp": "./dist/index.js" },
+  "files": ["dist"],
+  "scripts": { "build": "tsc" },
+  "keywords": ["mcp", "model context protocol", "claude", "fake data", "personas", "test users"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/mohaaosman/shaqsiyad", "directory": "packages/mcp" },
+  "engines": { "node": ">=18" },
+  "dependencies": { "@modelcontextprotocol/sdk": "^1.32.2", "zod": "^4.6.7" },
+  "devDependencies": { "typescript": "^5.9.3", "@types/node": "^22.10.0" }
+}

@@ -1,0 +1,26 @@
+<style>
+  body { font: 13px Inter, system-ui, sans-serif; margin: 16px; color: #1b2140; }
+  label { display: block; margin-top: 10px; font-weight: 600; }
+  input, select { width: 100%; box-sizing: border-box; margin-top: 4px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 6px; }
+  .row { display: flex; gap: 8px; }
+  button { margin-top: 16px; width: 100%; padding: 10px; border: 0; border-radius: 8px; background: #1b2140; color: #f5f0e6; font-weight: 600; cursor: pointer; }
+  p { color: #5c6075; margin: 0 0 4px; }
+</style>
+<p>Select frames, then fill them with fictional people.</p>
+<label>Gender
+  <select id="gender"><option value="">Any</option><option value="female">Women</option><option value="male">Men</option></select>
+</label>
+<label>Continent
+  <select id="continent"><option value="">Any</option><option>Africa</option><option>Asia</option><option>Europe</option><option>North America</option><option>South America</option><option>Oceania</option></select>
+</label>
+<div class="row">
+  <label>Min age <input id="minAge" type="number" min="20" max="75" /></label>
+  <label>Max age <input id="maxAge" type="number" min="20" max="75" /></label>
+</div>
+<label>Seed (same seed → same people) <input id="seed" type="number" min="0" /></label>
+<button id="fill">Fill selection</button>
+<script>
+  const value = (id) => document.getElementById(id).value;
+  document.getElementById('fill').onclick = () =>
+    parent.postMessage({ pluginMessage: { type: 'fill', gender: value('gender'), continent: value('continent'), minAge: value('minAge'), maxAge: value('maxAge'), seed: value('seed') } }, '*');
+</script>

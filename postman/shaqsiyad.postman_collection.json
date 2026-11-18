@@ -1,0 +1,746 @@
+{
+  "info": {
+    "name": "Shaqsiyad API",
+    "description": "Fictional people with whole personalities: faces, ethnicity, faith, careers, tastes and connections. Read-only, no keys, CORS open. Every person is fictional; contact details use reserved domains and fictional phone ranges. 120 requests a minute per IP.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://shaqsiyad.example/api/v1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Search and filter people",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/personas",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "personas"
+          ],
+          "query": [
+            {
+              "key": "q",
+              "value": "",
+              "description": "Free text. Names first, then places, work, traits, taste and story. Common spellings match (Mohamed, Muhammad).",
+              "disabled": true
+            },
+            {
+              "key": "gender",
+              "value": "",
+              "description": "male or female",
+              "disabled": true
+            },
+            {
+              "key": "minAge",
+              "value": "",
+              "description": "20–75",
+              "disabled": true
+            },
+            {
+              "key": "maxAge",
+              "value": "",
+              "description": "20–75",
+              "disabled": true
+            },
+            {
+              "key": "continent",
+              "value": "",
+              "description": "Africa, Asia, Europe, North America, South America, Oceania",
+              "disabled": true
+            },
+            {
+              "key": "country",
+              "value": "",
+              "description": "Country they live in, e.g. Kenya",
+              "disabled": true
+            },
+            {
+              "key": "ethnicity",
+              "value": "",
+              "description": "Ethnic group, e.g. Somali, Yoruba, Malaysian Chinese",
+              "disabled": true
+            },
+            {
+              "key": "religion",
+              "value": "",
+              "description": "Muslim, Catholic, Christian, Hindu, Buddhist, Not religious…",
+              "disabled": true
+            },
+            {
+              "key": "tier",
+              "value": "",
+              "description": "radiant, luminous, warm, soft, muted. Repeat or comma-separate.",
+              "disabled": true
+            },
+            {
+              "key": "mbti",
+              "value": "",
+              "description": "e.g. INFJ",
+              "disabled": true
+            },
+            {
+              "key": "relationship",
+              "value": "",
+              "description": "Single, Dating, Engaged, Married, Divorced, Widowed, Separated",
+              "disabled": true
+            },
+            {
+              "key": "industry",
+              "value": "",
+              "description": "e.g. Software, Healthcare",
+              "disabled": true
+            },
+            {
+              "key": "status",
+              "value": "",
+              "description": "Employed, Self-employed, Studying, Retired, Between jobs",
+              "disabled": true
+            },
+            {
+              "key": "sort",
+              "value": "",
+              "description": "relevance, name, age, age_desc, score, connected, shuffle",
+              "disabled": true
+            },
+            {
+              "key": "page",
+              "value": "",
+              "description": "From 1",
+              "disabled": true
+            },
+            {
+              "key": "limit",
+              "value": "",
+              "description": "1–100",
+              "disabled": true
+            },
+            {
+              "key": "full",
+              "value": "",
+              "description": "1 = complete people instead of summaries",
+              "disabled": true
+            },
+            {
+              "key": "format",
+              "value": "",
+              "description": "json (default), csv or ndjson. CSV and NDJSON carry summaries.",
+              "disabled": true
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Random people; any filter works",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/personas/random",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "personas",
+            "random"
+          ],
+          "query": [
+            {
+              "key": "q",
+              "value": "",
+              "description": "Free text. Names first, then places, work, traits, taste and story. Common spellings match (Mohamed, Muhammad).",
+              "disabled": true
+            },
+            {
+              "key": "gender",
+              "value": "",
+              "description": "male or female",
+              "disabled": true
+            },
+            {
+              "key": "minAge",
+              "value": "",
+              "description": "20–75",
+              "disabled": true
+            },
+            {
+              "key": "maxAge",
+              "value": "",
+              "description": "20–75",
+              "disabled": true
+            },
+            {
+              "key": "continent",
+              "value": "",
+              "description": "Africa, Asia, Europe, North America, South America, Oceania",
+              "disabled": true
+            },
+            {
+              "key": "country",
+              "value": "",
+              "description": "Country they live in, e.g. Kenya",
+              "disabled": true
+            },
+            {
+              "key": "ethnicity",
+              "value": "",
+              "description": "Ethnic group, e.g. Somali, Yoruba, Malaysian Chinese",
+              "disabled": true
+            },
+            {
+              "key": "religion",
+              "value": "",
+              "description": "Muslim, Catholic, Christian, Hindu, Buddhist, Not religious…",
+              "disabled": true
+            },
+            {
+              "key": "tier",
+              "value": "",
+              "description": "radiant, luminous, warm, soft, muted. Repeat or comma-separate.",
+              "disabled": true
+            },
+            {
+              "key": "mbti",
+              "value": "",
+              "description": "e.g. INFJ",
+              "disabled": true
+            },
+            {
+              "key": "relationship",
+              "value": "",
+              "description": "Single, Dating, Engaged, Married, Divorced, Widowed, Separated",
+              "disabled": true
+            },
+            {
+              "key": "industry",
+              "value": "",
+              "description": "e.g. Software, Healthcare",
+              "disabled": true
+            },
+            {
+              "key": "status",
+              "value": "",
+              "description": "Employed, Self-employed, Studying, Retired, Between jobs",
+              "disabled": true
+            },
+            {
+              "key": "count",
+              "value": "",
+              "description": "1–50",
+              "disabled": true
+            },
+            {
+              "key": "seed",
+              "value": "",
+              "description": "Same seed + same filters → same people, every time.",
+              "disabled": true
+            },
+            {
+              "key": "format",
+              "value": "",
+              "description": "json (default), csv or ndjson. CSV and NDJSON carry summaries.",
+              "disabled": true
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "One complete person",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/personas/:id",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "personas",
+            ":id"
+          ],
+          "query": [
+            {
+              "key": "fields",
+              "value": "",
+              "description": "Comma-separated top-level fields, e.g. fullName,personality,avatar",
+              "disabled": true
+            }
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "shq_00001",
+              "description": "Person id (shq_00042) or slug"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Connections around a person as nodes and edges",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/personas/:id/graph",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "personas",
+            ":id",
+            "graph"
+          ],
+          "query": [
+            {
+              "key": "depth",
+              "value": "",
+              "description": "1 or 2",
+              "disabled": true
+            }
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "shq_00001",
+              "description": "Person id (shq_00042) or slug"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Redirect to the portrait file",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/personas/:id/avatar",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "personas",
+            ":id",
+            "avatar"
+          ],
+          "query": [
+            {
+              "key": "size",
+              "value": "",
+              "description": "64, 128, 256 (square) or 512 (4:5)",
+              "disabled": true
+            },
+            {
+              "key": "format",
+              "value": "",
+              "description": "webp (default) or png. PNG is 512 only.",
+              "disabled": true
+            }
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "shq_00001",
+              "description": "Person id (shq_00042) or slug"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "People mapped to common app schemas for seeding databases",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/fixtures",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "fixtures"
+          ],
+          "query": [
+            {
+              "key": "shape",
+              "value": "",
+              "description": "users, customers, employees or patients",
+              "disabled": true
+            },
+            {
+              "key": "count",
+              "value": "",
+              "description": "1–100",
+              "disabled": true
+            },
+            {
+              "key": "seed",
+              "value": "",
+              "description": "Same seed + same filters → same people, every time.",
+              "disabled": true
+            },
+            {
+              "key": "q",
+              "value": "",
+              "description": "Free text. Names first, then places, work, traits, taste and story. Common spellings match (Mohamed, Muhammad).",
+              "disabled": true
+            },
+            {
+              "key": "gender",
+              "value": "",
+              "description": "male or female",
+              "disabled": true
+            },
+            {
+              "key": "minAge",
+              "value": "",
+              "description": "20–75",
+              "disabled": true
+            },
+            {
+              "key": "maxAge",
+              "value": "",
+              "description": "20–75",
+              "disabled": true
+            },
+            {
+              "key": "continent",
+              "value": "",
+              "description": "Africa, Asia, Europe, North America, South America, Oceania",
+              "disabled": true
+            },
+            {
+              "key": "country",
+              "value": "",
+              "description": "Country they live in, e.g. Kenya",
+              "disabled": true
+            },
+            {
+              "key": "ethnicity",
+              "value": "",
+              "description": "Ethnic group, e.g. Somali, Yoruba, Malaysian Chinese",
+              "disabled": true
+            },
+            {
+              "key": "religion",
+              "value": "",
+              "description": "Muslim, Catholic, Christian, Hindu, Buddhist, Not religious…",
+              "disabled": true
+            },
+            {
+              "key": "tier",
+              "value": "",
+              "description": "radiant, luminous, warm, soft, muted. Repeat or comma-separate.",
+              "disabled": true
+            },
+            {
+              "key": "mbti",
+              "value": "",
+              "description": "e.g. INFJ",
+              "disabled": true
+            },
+            {
+              "key": "relationship",
+              "value": "",
+              "description": "Single, Dating, Engaged, Married, Divorced, Widowed, Separated",
+              "disabled": true
+            },
+            {
+              "key": "industry",
+              "value": "",
+              "description": "e.g. Software, Healthcare",
+              "disabled": true
+            },
+            {
+              "key": "status",
+              "value": "",
+              "description": "Employed, Self-employed, Studying, Retired, Between jobs",
+              "disabled": true
+            },
+            {
+              "key": "format",
+              "value": "",
+              "description": "json (default), csv or ndjson. CSV and NDJSON carry summaries.",
+              "disabled": true
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "People with their partner and children",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/households",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "households"
+          ],
+          "query": [
+            {
+              "key": "count",
+              "value": "",
+              "description": "1–25",
+              "disabled": true
+            },
+            {
+              "key": "seed",
+              "value": "",
+              "description": "Same seed + same filters → same people, every time.",
+              "disabled": true
+            },
+            {
+              "key": "q",
+              "value": "",
+              "description": "Free text. Names first, then places, work, traits, taste and story. Common spellings match (Mohamed, Muhammad).",
+              "disabled": true
+            },
+            {
+              "key": "gender",
+              "value": "",
+              "description": "male or female",
+              "disabled": true
+            },
+            {
+              "key": "minAge",
+              "value": "",
+              "description": "20–75",
+              "disabled": true
+            },
+            {
+              "key": "maxAge",
+              "value": "",
+              "description": "20–75",
+              "disabled": true
+            },
+            {
+              "key": "continent",
+              "value": "",
+              "description": "Africa, Asia, Europe, North America, South America, Oceania",
+              "disabled": true
+            },
+            {
+              "key": "country",
+              "value": "",
+              "description": "Country they live in, e.g. Kenya",
+              "disabled": true
+            },
+            {
+              "key": "ethnicity",
+              "value": "",
+              "description": "Ethnic group, e.g. Somali, Yoruba, Malaysian Chinese",
+              "disabled": true
+            },
+            {
+              "key": "religion",
+              "value": "",
+              "description": "Muslim, Catholic, Christian, Hindu, Buddhist, Not religious…",
+              "disabled": true
+            },
+            {
+              "key": "tier",
+              "value": "",
+              "description": "radiant, luminous, warm, soft, muted. Repeat or comma-separate.",
+              "disabled": true
+            },
+            {
+              "key": "mbti",
+              "value": "",
+              "description": "e.g. INFJ",
+              "disabled": true
+            },
+            {
+              "key": "relationship",
+              "value": "",
+              "description": "Single, Dating, Engaged, Married, Divorced, Widowed, Separated",
+              "disabled": true
+            },
+            {
+              "key": "industry",
+              "value": "",
+              "description": "e.g. Software, Healthcare",
+              "disabled": true
+            },
+            {
+              "key": "status",
+              "value": "",
+              "description": "Employed, Self-employed, Studying, Retired, Between jobs",
+              "disabled": true
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "A manager and reports from one industry",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/teams",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "teams"
+          ],
+          "query": [
+            {
+              "key": "size",
+              "value": "",
+              "description": "2–20 people including the manager",
+              "disabled": true
+            },
+            {
+              "key": "industry",
+              "value": "",
+              "description": "e.g. Software; random when left out",
+              "disabled": true
+            },
+            {
+              "key": "seed",
+              "value": "",
+              "description": "Same seed + same filters → same people, every time.",
+              "disabled": true
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Contact sheet: a PNG grid of faces and names",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/sheet.png",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sheet.png"
+          ],
+          "query": [
+            {
+              "key": "count",
+              "value": "",
+              "description": "1–24",
+              "disabled": true
+            },
+            {
+              "key": "seed",
+              "value": "",
+              "description": "Same seed + same filters → same people, every time.",
+              "disabled": true
+            },
+            {
+              "key": "q",
+              "value": "",
+              "description": "Free text. Names first, then places, work, traits, taste and story. Common spellings match (Mohamed, Muhammad).",
+              "disabled": true
+            },
+            {
+              "key": "gender",
+              "value": "",
+              "description": "male or female",
+              "disabled": true
+            },
+            {
+              "key": "minAge",
+              "value": "",
+              "description": "20–75",
+              "disabled": true
+            },
+            {
+              "key": "maxAge",
+              "value": "",
+              "description": "20–75",
+              "disabled": true
+            },
+            {
+              "key": "continent",
+              "value": "",
+              "description": "Africa, Asia, Europe, North America, South America, Oceania",
+              "disabled": true
+            },
+            {
+              "key": "country",
+              "value": "",
+              "description": "Country they live in, e.g. Kenya",
+              "disabled": true
+            },
+            {
+              "key": "ethnicity",
+              "value": "",
+              "description": "Ethnic group, e.g. Somali, Yoruba, Malaysian Chinese",
+              "disabled": true
+            },
+            {
+              "key": "religion",
+              "value": "",
+              "description": "Muslim, Catholic, Christian, Hindu, Buddhist, Not religious…",
+              "disabled": true
+            },
+            {
+              "key": "tier",
+              "value": "",
+              "description": "radiant, luminous, warm, soft, muted. Repeat or comma-separate.",
+              "disabled": true
+            },
+            {
+              "key": "mbti",
+              "value": "",
+              "description": "e.g. INFJ",
+              "disabled": true
+            },
+            {
+              "key": "relationship",
+              "value": "",
+              "description": "Single, Dating, Engaged, Married, Divorced, Widowed, Separated",
+              "disabled": true
+            },
+            {
+              "key": "industry",
+              "value": "",
+              "description": "e.g. Software, Healthcare",
+              "disabled": true
+            },
+            {
+              "key": "status",
+              "value": "",
+              "description": "Employed, Self-employed, Studying, Retired, Between jobs",
+              "disabled": true
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Totals and every facet with counts",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/stats",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "stats"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    }
+  ]
+}

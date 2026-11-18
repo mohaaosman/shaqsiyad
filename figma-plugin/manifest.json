@@ -1,0 +1,13 @@
+{
+  "name": "Shaqsiyad",
+  "id": "shaqsiyad-people",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["https://shaqsiyad.example"],
+    "reasoning": "Fetches fictional people and their portraits from the Shaqsiyad API."
+  }
+}

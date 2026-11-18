@@ -1,0 +1,26 @@
+{
+  "Shaqsiyad: random people (fetch)": {
+    "scope": "javascript,typescript,javascriptreact,typescriptreact",
+    "prefix": "shq-random",
+    "body": [
+      "const people = await fetch('https://shaqsiyad.example/api/v1/personas/random?count=${1:5}&seed=${2:1}').then((r) => r.json());"
+    ]
+  },
+  "Shaqsiyad: fixtures (fetch)": {
+    "scope": "javascript,typescript,javascriptreact,typescriptreact",
+    "prefix": "shq-fixtures",
+    "body": [
+      "const ${1:users} = await fetch('https://shaqsiyad.example/api/v1/fixtures?shape=${2|users,customers,employees,patients|}&count=${3:50}&seed=${4:1}').then((r) => r.json());"
+    ]
+  },
+  "Shaqsiyad: client": {
+    "scope": "javascript,typescript",
+    "prefix": "shq-client",
+    "body": ["import { Shaqsiyad } from 'shaqsiyad';", "", "const api = new Shaqsiyad();", "const people = await api.random({ count: ${1:5}, seed: ${2:1} });"]
+  },
+  "Shaqsiyad: Python client": {
+    "scope": "python",
+    "prefix": "shq-client",
+    "body": ["from shaqsiyad import Shaqsiyad", "", "api = Shaqsiyad()", "people = api.random(${1:5}, seed=${2:1})"]
+  }
+}
