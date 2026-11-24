@@ -37,9 +37,10 @@ const textFor = (p: Person): Record<string, string> => ({
 });
 
 async function fetchPeople(count: number, request: FillRequest): Promise<Person[]> {
-  const sp = new URLSearchParams({ count: String(count) });
-  for (const key of ['gender', 'continent', 'minAge', 'maxAge', 'seed'] as const) if (request[key]) sp.set(key, request[key]);
-  const res = await fetch(`${ORIGIN}/api/v1/personas/random?${sp}`);
+  // The plugin sandbox has no URLSearchParams, so build the query by hand.
+  const pairs = [`count=${count}`];
+  for (const key of ['gender', 'continent', 'minAge', 'maxAge', 'seed'] as const) if (request[key]) pairs.push(`${key}=${encodeURIComponent(request[key])}`);
+  const res = await fetch(`${ORIGIN}/api/v1/personas/random?${pairs.join('&')}`);
   if (!res.ok) throw new Error(((await res.json()) as { error: string }).error);
   return (await res.json()) as Person[];
 }
