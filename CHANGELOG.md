@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.3.0 — 2026-11-24
+
+### `shaqsiyad` (npm) and `shaqsiyad` (PyPI) — 0.3.0
+- Typed fixture records: `UserFixture`, `CustomerFixture`, `EmployeeFixture`, `PatientFixture`. `fixtures('customers')` returns `CustomerFixture[]`. Only confirmed fields are typed; records stay open for the rest.
+- Offline snapshots: `shaqsiyad pull --count 1000 --seed 1 --out people.json`, then `new Shaqsiyad({ snapshot })` / `Shaqsiyad(snapshot=...)` or `--snapshot` on the CLI. `random`, `search`, `searchAll`, `person`, `stats` and `users`/`customers` fixtures work offline with the same filters; the same seed picks the same people in JS and Python.
+- Faker-style adapter: `import { createFaker } from 'shaqsiyad/faker'` / `from shaqsiyad.faker import create_faker`.
+
+### New packages — 0.1.0
+- **Go** (`github.com/mohaaosman/shaqsiyad/packages/go`) and **PHP** (`shaqsiyad/shaqsiyad`) SDKs, matching the JS/Python surface and tests.
+- **`shaqsiyad-react`**: `ShaqsiyadProvider`, `usePeople`, `useSearch`, `usePerson`, `useFixtures`, `<Avatar>`, with a per-provider cache and stale-response protection.
+- **`shaqsiyad-storybook`**: `shaqsiyadLoader`, `peopleLoader` and `withPeople`, driven by `parameters.shaqsiyad`.
+
+### `shaqsiyad-mcp` — 0.3.0
+- `find_household_for` and `find_team_for` tools, and a `user_panel` prompt.
+
+### Figma plugin — 0.3.0
+- New layers `#phone`, `#company`, `#bio`, `#initials`, `#last`, `#title`.
+- Per-frame filters from frame names, e.g. `Card [gender=female,continent=Africa]`.
+- Repeat grids: select one frame whose children share a name to fill each child.
+- Selections over 50 are fetched in batches. Now bundled with esbuild, with tests for the fill logic.
+
+### Repo
+- Seeder recipes for Prisma, Drizzle, Django, Rails and Supabase ([`examples/seeders.md`](examples/seeders.md)).
+- Web playground in [`playground/`](playground).
+- CI covers every package; the contract check now covers fixture schemas.
+
 ## 0.2.0 — 2026-11-24
 
 ### `shaqsiyad` (npm)

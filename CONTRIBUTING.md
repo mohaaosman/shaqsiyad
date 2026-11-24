@@ -14,7 +14,10 @@ Keep code small and dependency-free where you can. Match the existing style.
 cd packages/js && pnpm install && pnpm test
 cd packages/mcp && pnpm install && pnpm test
 cd packages/python && PYTHONPATH=src python -m unittest discover -s tests
-cd figma-plugin && pnpm install && pnpm build
+cd packages/react && pnpm install && pnpm test        # needs packages/js built
+cd packages/storybook && pnpm install && pnpm test    # needs packages/js built
+cd figma-plugin && pnpm install && pnpm build && pnpm test
+node --test playground/*.test.js
 python3 scripts/check-contract.py   # spec, Postman and SDKs agree
 ```
 

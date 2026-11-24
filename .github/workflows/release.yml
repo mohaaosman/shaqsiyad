@@ -3,19 +3,22 @@ name: Release
 # Tag a package to publish it:
 #   git tag js-v0.2.0     && git push origin js-v0.2.0      → shaqsiyad on npm
 #   git tag mcp-v0.2.0    && git push origin mcp-v0.2.0     → shaqsiyad-mcp on npm
+#   git tag react-v0.1.0  && git push origin react-v0.1.0   → shaqsiyad-react on npm
+#   git tag storybook-v0.1.0 && git push origin storybook-v0.1.0 → shaqsiyad-storybook on npm
 #   git tag python-v0.2.0 && git push origin python-v0.2.0  → shaqsiyad on PyPI
+#   git tag packages/go/v0.1.0 && git push origin packages/go/v0.1.0 → Go module (no job needed; the Go proxy reads the tag)
 # npm needs an NPM_TOKEN secret. PyPI uses trusted publishing: add this repo + workflow as a publisher on pypi.org.
 
 on:
   push:
-    tags: ['js-v*', 'mcp-v*', 'python-v*']
+    tags: ['js-v*', 'mcp-v*', 'react-v*', 'storybook-v*', 'python-v*']
 
 permissions:
   contents: read
 
 jobs:
   npm:
-    if: startsWith(github.ref_name, 'js-v') || startsWith(github.ref_name, 'mcp-v')
+    if: startsWith(github.ref_name, 'js-v') || startsWith(github.ref_name, 'mcp-v') || startsWith(github.ref_name, 'react-v') || startsWith(github.ref_name, 'storybook-v')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,6 +36,9 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      - name: Build the local JS client (react and storybook link to it)
+        run: pnpm install --frozen-lockfile && pnpm build
+        working-directory: packages/js
       - run: pnpm install --frozen-lockfile && pnpm test
         working-directory: ${{ steps.pkg.outputs.dir }}
       - run: npm publish --provenance --access public
