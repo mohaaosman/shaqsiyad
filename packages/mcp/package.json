@@ -1,6 +1,6 @@
 {
   "name": "shaqsiyad-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "MCP server for the Shaqsiyad API: give AI agents fictional people with faces, ethnicity, faith, careers and connections.",
   "type": "module",
   "bin": {

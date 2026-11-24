@@ -1,7 +1,7 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-export const VERSION = '0.2.0';
+export const VERSION = '0.3.0';
 export const DEFAULT_BASE_URL = 'https://shaqsiyad.example/api/v1';
 
 export interface ServerOptions {
@@ -62,6 +62,54 @@ export function createServer(options: ServerOptions = {}): McpServer {
   server.registerTool('get_graph', { description: 'People connected to a person (shared university, workplace, flight, festival…) as nodes and edges.', inputSchema: { id: z.string(), depth: z.number().int().min(1).max(2).optional() } }, ({ id, depth }) => call(`/personas/${encodeURIComponent(id)}/graph`, { depth }));
   server.registerTool('get_stats', { description: 'Dataset totals and every facet value (countries, ethnic groups, religions, industries…). Use it to pick valid filter values.', inputSchema: {} }, () => call('/stats'));
 
+  /** Load a person as JSON, or return a tool error result. */
+  async function loadPerson(id: string): Promise<{ person: Record<string, any> } | { error: ReturnType<typeof errorResult> }> {
+    const { ok, text } = await request(`/personas/${encodeURIComponent(id)}`);
+    if (!ok) return { error: errorResult(text) };
+    try {
+      return { person: JSON.parse(text) };
+    } catch {
+      return { error: errorResult(`Unexpected response for ${id}: ${text.slice(0, 200)}`) };
+    }
+  }
+  const errorResult = (text: string) => ({ content: [{ type: 'text' as const, text }], isError: true });
+  /** A stable seed from a person's id, so the same person always gets the same household or team. */
+  const seedFor = (id: string) => Number(String(id).replace(/\D/g, '').slice(-9) || 0);
+
+  server.registerTool(
+    'find_household_for',
+    { description: "Households that fit alongside a person: same country, ethnic group and religion. Good for neighbours, family friends or a matching family for a scenario.", inputSchema: { id: z.string().describe('Person id or slug'), count: z.number().int().min(1).max(25).optional() } },
+    async ({ id, count }) => {
+      const loaded = await loadPerson(id);
+      if ('error' in loaded) return loaded.error;
+      const p = loaded.person;
+      const filters = { country: p.country, ethnicity: p.ethnicity, religion: typeof p.religion === 'object' ? p.religion?.name : p.religion };
+      const { ok, text } = await request('/households', { ...filters, count: count ?? 1, seed: seedFor(p.id ?? id) });
+      if (!ok) return errorResult(text);
+      return { content: [{ type: 'text' as const, text: JSON.stringify({ anchor: { id: p.id, fullName: p.fullName }, matchedOn: filters, households: JSON.parse(text) }) }] };
+    }
+  );
+
+  server.registerTool(
+    'find_team_for',
+    { description: "A team in a person's own industry — colleagues for a workplace scenario. The person is the anchor; the team is who they would work with.", inputSchema: { id: z.string().describe('Person id or slug'), size: z.number().int().min(2).max(20).optional() } },
+    async ({ id, size }) => {
+      const loaded = await loadPerson(id);
+      if ('error' in loaded) return loaded.error;
+      const p = loaded.person;
+      const industry = p.career?.industry;
+      if (!industry) return errorResult(`${p.fullName ?? id} has no industry (career status: ${p.career?.status ?? 'unknown'}), so there is no team to match.`);
+      const { ok, text } = await request('/teams', { industry, size, seed: seedFor(p.id ?? id) });
+      if (!ok) return errorResult(text);
+      return {
+        content: [
+          { type: 'text' as const, text: `Team for ${p.fullName} (${p.id}), ${p.career?.title ?? 'member'} in ${industry}. They are the requested anchor; the people below are their colleagues.` },
+          { type: 'text' as const, text: JSON.stringify({ anchor: { id: p.id, fullName: p.fullName, title: p.career?.title, industry }, team: JSON.parse(text) }) }
+        ]
+      };
+    }
+  );
+
   server.registerTool(
     'get_avatar',
     { description: "A person's portrait as an image, plus its URL.", inputSchema: { id: z.string(), size: z.union([z.literal(64), z.literal(128), z.literal(256), z.literal(512)]).optional() } },
@@ -104,6 +152,49 @@ export function createServer(options: ServerOptions = {}): McpServer {
             content: {
               type: 'text' as const,
               text: `You are role-playing this fictional person as a real user of a product. Stay in character: let their age, faith and observance, family, job, money, personality and habits shape what they want, what worries them and how they write. Do not mention that you are an AI or that the person is fictional.\n\nScenario: ${scenario}\n\nProfile:\n${profile}`
+            }
+          }
+        ]
+      };
+    }
+  );
+
+  server.registerPrompt(
+    'user_panel',
+    {
+      description: 'Run a moderated panel of fictional people reacting to a brief (a feature, a message, a price) — each in character — then summarise where they agree and disagree.',
+      argsSchema: {
+        brief: z.string().describe('What the panel reacts to, e.g. "a budgeting app that rounds up purchases into savings"'),
+        size: z.string().optional().describe('How many panellists, 1–12 (default 5)'),
+        seed: z.string().optional().describe('Same seed gives the same panel (default 1)')
+      }
+    },
+    async ({ brief, size, seed }) => {
+      const count = Math.min(Math.max(Number.parseInt(size ?? '5', 10) || 5, 1), 12);
+      const seedValue = Math.max(Number.parseInt(seed ?? '1', 10) || 0, 0);
+      const { ok, text } = await request('/personas/random', { count, seed: seedValue });
+      const panel = ok ? text : `(The panel could not be loaded: ${text})`;
+      return {
+        messages: [
+          {
+            role: 'user' as const,
+            content: {
+              type: 'text' as const,
+              text: [
+                `You are moderating a user research panel of ${count} fictional people (seed ${seedValue}). Their full profiles are below.`,
+                '',
+                `Brief: ${brief}`,
+                '',
+                'Run the session:',
+                '1. Introduce each panellist in one line (name, age, where they live, what they do).',
+                '2. Ask each for their first reaction. Answer as them, in their own voice — let their age, faith and observance, family, job, money, personality and habits shape what they like, what worries them and what they would need.',
+                '3. Ask one follow-up that draws out a disagreement between panellists, and let them respond to each other.',
+                '4. Step out of character and summarise: where they agree, where they disagree and why, who would and would not use it, and the top three changes they would ask for.',
+                'Do not invent facts that contradict a profile.',
+                '',
+                'Panel:',
+                panel
+              ].join('\n')
             }
           }
         ]

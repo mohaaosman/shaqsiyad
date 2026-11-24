@@ -5,8 +5,11 @@
   .row { display: flex; gap: 8px; }
   button { margin-top: 16px; width: 100%; padding: 10px; border: 0; border-radius: 8px; background: #1b2140; color: #f5f0e6; font-weight: 600; cursor: pointer; }
   p { color: #5c6075; margin: 0 0 4px; }
+  .hint { font-size: 11px; }
+  code { font-size: 10px; background: #eef0f6; padding: 0 3px; border-radius: 3px; }
 </style>
 <p>Select frames, then fill them with fictional people.</p>
+<p class="hint">Select one list frame to fill each same-named row. Add <code>[gender=female, country=Kenya]</code> to a frame's name to filter just that frame.</p>
 <label>Gender
   <select id="gender"><option value="">Any</option><option value="female">Women</option><option value="male">Men</option></select>
 </label>
