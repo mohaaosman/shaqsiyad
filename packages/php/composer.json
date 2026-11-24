@@ -1,0 +1,30 @@
+{
+  "name": "shaqsiyad/shaqsiyad",
+  "description": "Client for the Shaqsiyad API: fictional people with faces, ethnicity, faith, careers and connections.",
+  "type": "library",
+  "license": "MIT",
+  "keywords": ["fake data", "test data", "fixtures", "personas", "mock users", "seed", "laravel"],
+  "homepage": "https://github.com/mohaaosman/shaqsiyad",
+  "require": {
+    "php": ">=8.1",
+    "ext-json": "*"
+  },
+  "suggest": {
+    "ext-curl": "Faster HTTP; falls back to PHP streams without it"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5 || ^11.0"
+  },
+  "autoload": {
+    "psr-4": { "Shaqsiyad\\": "src/" }
+  },
+  "autoload-dev": {
+    "psr-4": { "Shaqsiyad\\Tests\\": "tests/" }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

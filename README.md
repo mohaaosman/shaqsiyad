@@ -80,7 +80,7 @@ Each profile also has a 1200×630 share card at `/people/{slug}/card.png`, used 
 | [`packages/js`](packages/js) | `shaqsiyad` on npm — typed client + CLI, zero dependencies |
 | [`packages/python`](packages/python) | `shaqsiyad` on PyPI — client + CLI, standard library only |
 | [`packages/go`](packages/go) | Go module — zero dependencies, `context.Context` everywhere |
-| [`packages/php`](packages/php) | `shaqsiyad/shaqsiyad` on Packagist — PHP 8.1+ |
+| [`packages/php`](packages/php) | `shaqsiyad/shaqsiyad` for Composer — PHP 8.1+, zero runtime dependencies |
 | [`packages/mcp`](packages/mcp) | `shaqsiyad-mcp` — MCP tools, resource, role-play and user-panel prompts for Claude and other agents |
 | [`packages/react`](packages/react) | `shaqsiyad-react` — `usePeople`, `useSearch`, `usePerson`, `useFixtures`, `<Avatar>` |
 | [`packages/storybook`](packages/storybook) | `shaqsiyad-storybook` — loader + decorator that put people in `context.loaded` |

@@ -36,7 +36,7 @@ test('random snippets', () => {
   assert.match(s.javascript, /new Shaqsiyad\(\);/);
   assert.match(s.python, /api\.random\(3, min_age=30, country="Côte d'Ivoire", seed=1\)/);
   assert.equal(s.cli, `npx shaqsiyad random --minAge 30 --country 'Côte d'\\''Ivoire' --count 3 --seed 1`);
-  assert.match(s.go, /client\.Random\(ctx, shaqsiyad\.RandomParams\{MinAge: 30, Country: "Côte d'Ivoire", Count: 3, Seed: 1\}\)/);
+  assert.match(s.go, /client\.Random\(ctx, shaqsiyad\.RandomParams\{Filters: shaqsiyad\.Filters\{MinAge: 30, Country: "Côte d'Ivoire"\}, Count: 3, Seed: shaqsiyad\.Seed\(1\)\}\)/);
 });
 
 test('search puts the text first', () => {

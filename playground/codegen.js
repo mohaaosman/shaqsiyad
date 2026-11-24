@@ -133,19 +133,34 @@ export function cli(state) {
   return parts.join(' ');
 }
 
+const GO_FILTERS = new Set(['q', 'gender', 'minAge', 'maxAge', 'continent', 'country', 'ethnicity', 'religion', 'tier', 'mbti', 'relationship', 'industry', 'status']);
+const goField = (k) => ({ q: 'Q', mbti: 'MBTI' })[k] ?? pascal(k);
+
 export function go(state) {
-  const all = params(state).filter(([k]) => k !== 'format');
-  const type = { random: 'RandomParams', search: 'SearchParams', fixtures: 'FixturesParams', households: 'HouseholdsParams', team: 'TeamParams' }[state.endpoint];
+  const all = params(state).filter(([k]) => k !== 'format' && k !== 'shape');
+  const type = { random: 'RandomParams', search: 'SearchParams', fixtures: 'FixtureParams', households: 'RandomParams', team: 'TeamParams' }[state.endpoint];
   const method = { random: 'Random', search: 'Search', fixtures: 'Fixtures', households: 'Households', team: 'Team', stats: 'Stats' }[state.endpoint];
-  const fields = all.map(([k, v]) => `${k === 'q' ? 'Q' : pascal(k)}: ${typeof v === 'number' ? v : goString(v)}`);
+  const value = ([k, v]) => {
+    if (k === 'seed') return `shaqsiyad.Seed(${Number(v)})`;
+    if (k === 'tier') return `[]string{${String(v).split(',').map((t) => goString(t.trim())).join(', ')}}`;
+    return typeof v === 'number' ? String(v) : goString(String(v));
+  };
+  // Team has no embedded filters; everything else takes filters inside shaqsiyad.Filters{...}.
+  const embeds = state.endpoint !== 'team';
+  const filterFields = embeds ? all.filter(([k]) => GO_FILTERS.has(k)) : [];
+  const ownFields = all.filter((entry) => !filterFields.includes(entry));
+  const fields = [
+    ...(filterFields.length ? [`Filters: shaqsiyad.Filters{${filterFields.map((e) => `${goField(e[0])}: ${value(e)}`).join(', ')}}`] : []),
+    ...ownFields.map((e) => `${goField(e[0])}: ${value(e)}`)
+  ];
+  const args = ['ctx', ...(state.endpoint === 'fixtures' ? [goString(state.shape || 'users')] : []), ...(type ? [`shaqsiyad.${type}{${fields.join(', ')}}`] : [])];
   const base = customBase(state);
-  const lines = [
+  return [
     'import shaqsiyad "github.com/mohaaosman/shaqsiyad/packages/go"',
     '',
     `client := shaqsiyad.New(${base ? `shaqsiyad.WithBaseURL(${goString(base)})` : ''})`,
-    type ? `result, err := client.${method}(ctx, shaqsiyad.${type}{${fields.join(', ')}})` : `result, err := client.${method}(ctx)`
-  ];
-  return lines.join('\n');
+    `result, err := client.${method}(${args.join(', ')})`
+  ].join('\n');
 }
 
 /** Every snippet for the current form state. */
