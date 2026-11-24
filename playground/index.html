@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shaqsiyad Playground</title>
+<meta name="description" content="Build a Shaqsiyad API query, run it, and copy it as curl, JavaScript, Python, CLI or Go.">
+<style>
+  :root {
+    --bg: #f7f5f1; --surface: #ffffff; --sunken: #efebe4; --text: #22211e; --muted: #6b675f;
+    --line: #dcd6cc; --accent: #0f6e5a; --accent-text: #ffffff; --danger: #a4302a; --code-bg: #f1ede6;
+    --radius: 10px; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #151513; --surface: #1e1e1b; --sunken: #262622; --text: #ece9e2; --muted: #a19c92;
+      --line: #36352f; --accent: #4cc3a4; --accent-text: #0b1f1a; --danger: #ef8a83; --code-bg: #232320;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #151513; --surface: #1e1e1b; --sunken: #262622; --text: #ece9e2; --muted: #a19c92;
+    --line: #36352f; --accent: #4cc3a4; --accent-text: #0b1f1a; --danger: #ef8a83; --code-bg: #232320;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { padding: 24px 16px 8px; max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--muted); }
+  main { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 20px; padding: 16px; max-width: 1200px; margin: 0 auto; }
+  @media (max-width: 820px) { main { grid-template-columns: minmax(0, 1fr); } }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; min-width: 0; }
+  fieldset { border: 0; padding: 0; margin: 0 0 14px; }
+  legend { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .full { grid-column: 1 / -1; }
+  label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); min-width: 0; }
+  input, select { font: inherit; color: var(--text); background: var(--sunken); border: 1px solid var(--line); border-radius: 7px; padding: 7px 9px; width: 100%; min-width: 0; }
+  input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .endpoints { display: flex; flex-wrap: wrap; gap: 6px; }
+  .endpoints label { flex-direction: row; align-items: center; }
+  .endpoints input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .endpoints span { padding: 6px 11px; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; color: var(--text); background: var(--sunken); font-size: 13px; }
+  .endpoints input:checked + span { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  .endpoints input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .url { display: flex; gap: 8px; align-items: stretch; margin-bottom: 16px; }
+  @media (max-width: 520px) { .url { flex-wrap: wrap; } .url code { flex-basis: 100%; } .url button { flex: 1; } }
+  .url code { flex: 1; min-width: 0; overflow-wrap: anywhere; font: 13px/1.5 var(--mono); background: var(--code-bg); border: 1px solid var(--line); border-radius: 7px; padding: 9px 11px; }
+  button { font: inherit; font-size: 14px; border-radius: 7px; border: 1px solid var(--line); background: var(--sunken); color: var(--text); padding: 7px 12px; cursor: pointer; white-space: nowrap; }
+  button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .tabs button { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; color: var(--muted); padding: 8px 12px; }
+  .tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+  .snippet { position: relative; }
+  .snippet pre { margin: 0; padding: 14px; padding-right: 76px; background: var(--code-bg); border: 1px solid var(--line); border-top: 0; border-radius: 0 0 7px 7px; overflow-x: auto; font: 13px/1.55 var(--mono); white-space: pre; }
+  .snippet button { position: absolute; top: 8px; right: 8px; font-size: 12px; padding: 4px 9px; }
+  h2 { font-size: 15px; margin: 20px 0 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .status { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .status.error { color: var(--danger); }
+  .faces { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-bottom: 12px; }
+  .face { text-align: center; font-size: 13px; }
+  .face img, .face .initials { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 6px; background: var(--sunken); }
+  .face .initials { display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 26px; color: var(--muted); }
+  .face strong { display: block; overflow-wrap: anywhere; }
+  .face span { color: var(--muted); display: block; overflow-wrap: anywhere; }
+  .json { max-height: 480px; overflow: auto; background: var(--code-bg); border: 1px solid var(--line); border-radius: 7px; padding: 12px; font: 12.5px/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+  .empty { color: var(--muted); font-size: 14px; margin: 0; }
+  footer { max-width: 1200px; margin: 0 auto; padding: 8px 16px 32px; color: var(--muted); font-size: 13px; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Shaqsiyad Playground</h1>
+  <p>Build a query for fictional people, run it, and copy it as code.</p>
+</header>
+
+<main>
+  <form class="card" id="form" autocomplete="off">
+    <fieldset>
+      <legend>Endpoint</legend>
+      <div class="endpoints" role="radiogroup">
+        <label><input type="radio" name="endpoint" value="random" checked><span>random</span></label>
+        <label><input type="radio" name="endpoint" value="search"><span>search</span></label>
+        <label><input type="radio" name="endpoint" value="fixtures"><span>fixtures</span></label>
+        <label><input type="radio" name="endpoint" value="households"><span>households</span></label>
+        <label><input type="radio" name="endpoint" value="team"><span>team</span></label>
+        <label><input type="radio" name="endpoint" value="stats"><span>stats</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset data-for="random search fixtures households team">
+      <legend>Request</legend>
+      <div class="grid">
+        <label data-for="fixtures" class="full">Shape
+          <select name="shape"><option>users</option><option>customers</option><option>employees</option><option>patients</option></select>
+        </label>
+        <label data-for="random fixtures households">Count <input name="count" type="number" min="1" max="100" value="6"></label>
+        <label data-for="team">Team size <input name="size" type="number" min="2" max="20" value="6"></label>
+        <label data-for="team">Industry <input name="teamIndustry" placeholder="Healthcare"></label>
+        <label data-for="search">Limit <input name="limit" type="number" min="1" max="100" value="12"></label>
+        <label data-for="search">Page <input name="page" type="number" min="1"></label>
+        <label data-for="random fixtures households team">Seed <input name="seed" type="number" min="0" value="1"></label>
+        <label data-for="random search fixtures">Format
+          <select name="format"><option>json</option><option>csv</option><option>ndjson</option></select>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset data-for="random search fixtures households">
+      <legend>Filters</legend>
+      <div class="grid">
+        <label class="full">Text <input name="q" placeholder="nurse who loves jazz"></label>
+        <label>Gender <select name="gender"><option value="">any</option><option>female</option><option>male</option></select></label>
+        <label>Tier <select name="tier"><option value="">any</option><option>radiant</option><option>luminous</option><option>warm</option><option>soft</option><option>muted</option></select></label>
+        <label>Min age <input name="minAge" type="number" min="20" max="75" placeholder="20"></label>
+        <label>Max age <input name="maxAge" type="number" min="20" max="75" placeholder="75"></label>
+        <label>Continent <select name="continent"><option value="">any</option><option>Africa</option><option>Asia</option><option>Europe</option><option>North America</option><option>South America</option><option>Oceania</option></select></label>
+        <label>Country <input name="country" placeholder="Kenya"></label>
+        <label>Ethnicity <input name="ethnicity" placeholder="Somali"></label>
+        <label>Religion <input name="religion" placeholder="Muslim"></label>
+        <label>MBTI <input name="mbti" placeholder="INFJ" maxlength="4"></label>
+        <label>Relationship <input name="relationship" placeholder="Married"></label>
+        <label>Industry <input name="industry" placeholder="Healthcare"></label>
+        <label>Status <input name="status" placeholder="Employed"></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Server</legend>
+      <label>Base URL <input name="baseUrl" type="url" placeholder="https://shaqsiyad.example/api/v1"></label>
+    </fieldset>
+  </form>
+
+  <section class="card" aria-label="Request and code">
+    <div class="url">
+      <code id="url"></code>
+      <button type="button" id="copy-url">Copy</button>
+      <button type="button" class="primary" id="run">Run</button>
+    </div>
+
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="snippet">
+      <pre id="code" role="tabpanel"></pre>
+      <button type="button" id="copy-code">Copy</button>
+    </div>
+
+    <h2>Response <span class="status" id="status" aria-live="polite"></span></h2>
+    <div id="result"><p class="empty">Press Run to fetch.</p></div>
+  </section>
+</main>
+
+<footer>
+  Everyone here is fictional. <a href="https://github.com/mohaaosman/shaqsiyad">github.com/mohaaosman/shaqsiyad</a>
+</footer>
+
+<script type="module">
+  import { FILTERS, requestUrl, snippets } from './codegen.js';
+
+  const form = document.getElementById('form');
+  const TABS = [['curl', 'curl'], ['javascript', 'JavaScript'], ['python', 'Python'], ['cli', 'CLI'], ['go', 'Go']];
+  let tab = 'curl';
+  try { tab = localStorage.getItem('shq-playground-tab') || tab; } catch {}
+
+  function state() {
+    const f = new FormData(form);
+    const s = { endpoint: f.get('endpoint'), baseUrl: f.get('baseUrl'), filters: {} };
+    for (const k of ['shape', 'count', 'seed', 'limit', 'page', 'size', 'format']) s[k] = f.get(k);
+    for (const k of FILTERS) s.filters[k] = f.get(k);
+    if (s.endpoint === 'team') s.industry = f.get('teamIndustry');
+    return s;
+  }
+
+  function showFieldsFor(endpoint) {
+    for (const el of form.querySelectorAll('[data-for]')) el.hidden = !el.dataset.for.split(' ').includes(endpoint);
+  }
+
+  const tabs = document.getElementById('tabs');
+  for (const [id, label] of TABS) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.role = 'tab'; b.textContent = label; b.dataset.tab = id;
+    b.addEventListener('click', () => { tab = id; try { localStorage.setItem('shq-playground-tab', id); } catch {} update(); });
+    tabs.append(b);
+  }
+
+  function update() {
+    const s = state();
+    showFieldsFor(s.endpoint);
+    let url, code;
+    try { url = requestUrl(s); code = snippets(s)[tab] ?? ''; } catch (e) { url = ''; code = e.message; }
+    document.getElementById('url').textContent = url;
+    document.getElementById('code').textContent = code;
+    for (const b of tabs.children) b.setAttribute('aria-selected', String(b.dataset.tab === tab));
+    const params = new URLSearchParams();
+    for (const [k, v] of new FormData(form)) if (v !== '') params.set(k, v);
+    history.replaceState(null, '', `#${params}`);
+  }
+
+  function restore() {
+    const params = new URLSearchParams(location.hash.slice(1));
+    for (const [k, v] of params) {
+      const el = form.elements.namedItem(k);
+      if (!el) continue;
+      if (el instanceof RadioNodeList) { for (const r of el) r.checked = r.value === v; } else el.value = v;
+    }
+  }
+
+  async function copy(text, button) {
+    try { await navigator.clipboard.writeText(text); button.textContent = 'Copied'; }
+    catch { button.textContent = 'Press ⌘/Ctrl+C'; }
+    setTimeout(() => (button.textContent = 'Copy'), 1400);
+  }
+
+  const status = document.getElementById('status');
+  const result = document.getElementById('result');
+
+  function personList(data) {
+    if (Array.isArray(data) && data[0]?.fullName) return data;
+    if (Array.isArray(data?.results)) return data.results;
+    if (data?.manager) return [data.manager, ...(data.members ?? [])];
+    if (Array.isArray(data) && data[0]?.head) return data.map((h) => h.head);
+    return null;
+  }
+
+  function avatarSrc(p, base) {
+    const raw = typeof p.avatar === 'string' ? p.avatar : p.avatar?.sizes?.['128'] ?? p.avatar?.url;
+    if (!raw) return null;
+    try { return new URL(raw, base).href; } catch { return null; }
+  }
+
+  function render(data, text, url) {
+    result.replaceChildren();
+    const people = data ? personList(data) : null;
+    if (people?.length) {
+      const grid = document.createElement('div');
+      grid.className = 'faces';
+      for (const p of people) {
+        const card = document.createElement('div');
+        card.className = 'face';
+        const src = avatarSrc(p, url);
+        const initials = document.createElement('div');
+        initials.className = 'initials';
+        initials.textContent = p.initials ?? p.avatar?.initials ?? (p.fullName ?? '?').split(/\s+/).map((w) => w[0]).slice(0, 2).join('');
+        if (src) {
+          const img = document.createElement('img');
+          img.src = src; img.alt = p.fullName ?? ''; img.loading = 'lazy';
+          img.addEventListener('error', () => img.replaceWith(initials));
+          card.append(img);
+        } else card.append(initials);
+        const name = document.createElement('strong');
+        name.textContent = p.fullName ?? p.name ?? '';
+        const meta = document.createElement('span');
+        meta.textContent = [p.age, p.title ?? p.career?.title, p.city].filter(Boolean).join(' · ');
+        card.append(name, meta);
+        grid.append(card);
+      }
+      result.append(grid);
+    }
+    const pre = document.createElement('pre');
+    pre.className = 'json';
+    pre.textContent = data ? JSON.stringify(data, null, 2) : text;
+    result.append(pre);
+  }
+
+  let runId = 0;
+  async function run() {
+    const url = requestUrl(state());
+    const id = ++runId;
+    status.className = 'status';
+    status.textContent = 'Loading…';
+    const started = performance.now();
+    try {
+      const res = await fetch(url);
+      const text = await res.text();
+      if (id !== runId) return;
+      let data = null;
+      try { data = JSON.parse(text); } catch {}
+      const ms = Math.round(performance.now() - started);
+      status.textContent = `${res.status} · ${ms} ms`;
+      if (!res.ok) status.className = 'status error';
+      render(res.ok ? data : null, data?.error ?? text, url);
+    } catch (e) {
+      if (id !== runId) return;
+      status.className = 'status error';
+      status.textContent = 'Could not reach the server';
+      result.replaceChildren(Object.assign(document.createElement('p'), { className: 'empty', textContent: `${e.message}. Check the base URL, and that the server allows requests from this page (CORS).` }));
+    }
+  }
+
+  form.addEventListener('input', update);
+  form.addEventListener('change', update);
+  form.addEventListener('submit', (e) => { e.preventDefault(); run(); });
+  document.getElementById('run').addEventListener('click', run);
+  document.getElementById('copy-url').addEventListener('click', (e) => copy(document.getElementById('url').textContent, e.currentTarget));
+  document.getElementById('copy-code').addEventListener('click', (e) => copy(document.getElementById('code').textContent, e.currentTarget));
+
+  restore();
+  update();
+</script>
+</body>
+</html>

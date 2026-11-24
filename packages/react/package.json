@@ -1,0 +1,51 @@
+{
+  "name": "shaqsiyad-react",
+  "version": "0.1.0",
+  "description": "React hooks and an Avatar component for the Shaqsiyad API: fictional people for demos, mockups and prototypes.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc && node --test test/*.test.js"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "fake data",
+    "mock users",
+    "avatars",
+    "personas",
+    "prototype"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohaaosman/shaqsiyad",
+    "directory": "packages/react"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "shaqsiyad": ">=0.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.8",
+    "jsdom": "26.1.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "shaqsiyad": "link:../js",
+    "typescript": "5.9.3"
+  }
+}
