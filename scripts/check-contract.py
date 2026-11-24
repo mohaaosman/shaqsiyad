@@ -24,6 +24,16 @@ for path, ops in spec["paths"].items():
                 if ref and ref.split("/")[-1] not in spec["components"]["schemas"]:
                     problems.append(f"openapi: {path} {code} refers to missing schema {ref}")
 
+fixture_schemas = ["UserFixture", "CustomerFixture", "EmployeeFixture", "PatientFixture"]
+for name in fixture_schemas:
+    if name not in spec["components"]["schemas"]:
+        problems.append(f"openapi: missing schema {name}")
+fixture_items = spec["paths"]["/fixtures"]["get"]["responses"]["200"]["content"]["application/json"]["schema"].get("items", {})
+referenced = {ref["$ref"].split("/")[-1] for ref in fixture_items.get("anyOf", [])}
+for name in fixture_schemas:
+    if name not in referenced:
+        problems.append(f"openapi: /fixtures response does not reference {name}")
+
 postman = json.loads((ROOT / "postman/shaqsiyad.postman_collection.json").read_text())
 
 
@@ -58,7 +68,14 @@ for endpoint in ["/personas", "/personas/random", "/fixtures", "/households", "/
         if f"'{endpoint}'" not in src and f'"{endpoint}"' not in src:
             problems.append(f"{label}: no call to {endpoint}")
 
+py_src = (ROOT / "packages/python/src/shaqsiyad/__init__.py").read_text()
+for name in fixture_schemas:
+    if not re.search(rf"export (interface|type) {name}\b", js):
+        problems.append(f"js: no {name} type")
+    if not re.search(rf"^class {name}\(", py_src, re.M):
+        problems.append(f"python: no {name} TypedDict")
+
 if problems:
     print("\n".join(problems))
     sys.exit(1)
-print(f"ok: {len(paths)} endpoints, {len(filters)} filters agree across openapi, postman, js, python and mcp")
+print(f"ok: {len(paths)} endpoints, {len(filters)} filters and {len(fixture_schemas)} fixture shapes agree across openapi, postman, js, python and mcp")

@@ -1,6 +1,6 @@
 {
   "name": "shaqsiyad",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Typed client for the Shaqsiyad API: fictional people with faces, ethnicity, faith, careers and connections.",
   "type": "module",
   "main": "./dist/index.js",
@@ -9,7 +9,21 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./faker": {
+      "types": "./dist/faker.d.ts",
+      "import": "./dist/faker.js"
     }
+  },
+  "typesVersions": {
+    "*": {
+      "faker": [
+        "./dist/faker.d.ts"
+      ]
+    }
+  },
+  "bin": {
+    "shaqsiyad": "./dist/bin.js"
   },
   "files": [
     "dist"
@@ -26,7 +40,9 @@
     "mock users",
     "avatars",
     "seed",
-    "cli"
+    "cli",
+    "faker",
+    "offline"
   ],
   "license": "MIT",
   "repository": {
@@ -40,8 +56,5 @@
   "devDependencies": {
     "typescript": "^5.9.3",
     "@types/node": "^22.10.0"
-  },
-  "bin": {
-    "shaqsiyad": "./dist/bin.js"
   }
 }

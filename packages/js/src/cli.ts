@@ -1,4 +1,5 @@
-import { Shaqsiyad, ShaqsiyadError, type Query, type Shape } from './index.js';
+import { writeFile } from 'node:fs/promises';
+import { pullSnapshot, Shaqsiyad, ShaqsiyadError, type Query, type Shape } from './index.js';
 
 export { ShaqsiyadError };
 
@@ -15,6 +16,7 @@ Usage
   shaqsiyad stats
   shaqsiyad avatar <id|slug> [--size 64|128|256|512] [--format webp|png]
   shaqsiyad sheet [--count 12] [--seed 1] [filters]
+  shaqsiyad pull [--count 100] [--seed 1] [--out people.json] [filters]
 
 Filters
   --gender male|female  --minAge 20  --maxAge 75  --continent Africa  --country Kenya
@@ -23,6 +25,7 @@ Filters
 
 Options
   --base-url <url>   API root (or set SHAQSIYAD_BASE_URL)
+  --snapshot <file>  Answer from a file written by \`pull\` instead of the network
   --compact          One-line JSON
   -h, --help         This help
 `;
@@ -62,10 +65,11 @@ export async function run(argv: string[], out: (text: string) => void = (t) => p
   const format = typeof flags.format === 'string' ? flags.format : undefined;
   const query: Query = {};
   for (const [key, value] of Object.entries(flags)) {
-    if (['base-url', 'compact', 'help', 'all', 'format'].includes(key)) continue;
+    if (['base-url', 'snapshot', 'out', 'compact', 'help', 'all', 'format'].includes(key)) continue;
     query[key] = value === true ? 'true' : value;
   }
-  const api = new Shaqsiyad({ baseUrl });
+  const snapshot = typeof flags.snapshot === 'string' ? flags.snapshot : undefined;
+  const api = new Shaqsiyad({ baseUrl, snapshot });
   const print = (data: unknown) => out(`${JSON.stringify(data, null, compact ? 0 : 2)}\n`);
   const need = (what: string) => arg ?? fail(`${command} needs ${what}`);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,6 +111,15 @@ export async function run(argv: string[], out: (text: string) => void = (t) => p
       return out(`${api.avatarUrl(need('an id or slug'), { size: query.size ? (Number(query.size) as 64) : undefined, format: format as 'png' | undefined })}\n`);
     case 'sheet':
       return out(`${api.sheetUrl(asNumbers(query))}\n`);
+    case 'pull': {
+      const snap = await pullSnapshot(api, asNumbers({ count: 100, seed: 1, ...query }));
+      const json = `${JSON.stringify(snap, null, compact ? 0 : 2)}\n`;
+      if (typeof flags.out === 'string') {
+        await writeFile(flags.out, json);
+        return out(`Saved ${snap.people.length} people to ${flags.out}\n`);
+      }
+      return out(json);
+    }
     default:
       fail(`unknown command "${command}" (try --help)`);
   }

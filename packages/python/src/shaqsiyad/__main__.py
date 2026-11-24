@@ -5,7 +5,7 @@ import json
 import sys
 from typing import Any, Dict, List, Optional
 
-from . import Shaqsiyad, ShaqsiyadError, __version__
+from . import Shaqsiyad, ShaqsiyadError, __version__, pull_snapshot
 
 FILTERS = ["gender", "min-age", "max-age", "continent", "country", "ethnicity", "religion", "tier", "mbti", "relationship", "industry", "status"]
 INTS = {"min-age", "max-age"}
@@ -15,6 +15,7 @@ def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="shaqsiyad", description="Fictional people with whole lives.")
     p.add_argument("--version", action="version", version=__version__)
     p.add_argument("--base-url", help="API root (or set SHAQSIYAD_BASE_URL)")
+    p.add_argument("--snapshot", help="answer from a file written by `pull` instead of the network")
     p.add_argument("--compact", action="store_true", help="one-line JSON")
     sub = p.add_subparsers(dest="command", required=True)
 
@@ -64,6 +65,11 @@ def _parser() -> argparse.ArgumentParser:
 
     add("stats", "totals and facets", filters=False)
 
+    pl = add("pull", "save people to a snapshot file for offline use")
+    pl.add_argument("--count", type=int, default=100)
+    pl.add_argument("--seed", type=int, default=1)
+    pl.add_argument("--out", help="file to write (default: stdout)")
+
     a = add("avatar", "portrait URL", filters=False)
     a.add_argument("id")
     a.add_argument("--size", type=int, choices=[64, 128, 256, 512], default=512)
@@ -78,7 +84,11 @@ def _filters(ns: argparse.Namespace) -> Dict[str, Any]:
 def main(argv: Optional[List[str]] = None, out: Any = None) -> int:
     out = out or sys.stdout
     ns = _parser().parse_args(argv)
-    api = Shaqsiyad(base_url=ns.base_url)
+    try:
+        api = Shaqsiyad(base_url=ns.base_url, snapshot=ns.snapshot)
+    except (OSError, ValueError) as err:
+        sys.stderr.write(f"shaqsiyad: could not read snapshot: {err}\n")
+        return 1
 
     def emit(data: Any) -> None:
         out.write(json.dumps(data, ensure_ascii=False, indent=None if ns.compact else 2) + "\n")
@@ -114,6 +124,15 @@ def main(argv: Optional[List[str]] = None, out: Any = None) -> int:
             emit(api.team(size=ns.size, industry=ns.industry, seed=ns.seed))
         elif c == "stats":
             emit(api.stats())
+        elif c == "pull":
+            snap = pull_snapshot(api, ns.count, ns.seed, **_filters(ns))
+            text = json.dumps(snap, ensure_ascii=False, indent=None if ns.compact else 2) + "\n"
+            if ns.out:
+                with open(ns.out, "w", encoding="utf-8") as fh:
+                    fh.write(text)
+                out.write(f"Saved {len(snap['people'])} people to {ns.out}\n")
+            else:
+                out.write(text)
         elif c == "avatar":
             out.write(api.avatar_url(ns.id, size=ns.size, fmt=ns.format) + "\n")
     except ShaqsiyadError as err:
