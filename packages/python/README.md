@@ -1,6 +1,6 @@
 # shaqsiyad
 
-Python client and CLI for the [Shaqsiyad API](https://github.com/mohaaosman/shaqsiyad). Standard library only, Python 3.9+.
+Python client and CLI for the [Shaqsiyad API](https://github.com/mohaaosman/shaqsiyad). Standard library only, Python 3.10+.
 
 ```sh
 pip install shaqsiyad

@@ -7,7 +7,7 @@ name = "shaqsiyad"
 version = "0.3.0"
 description = "Client for the Shaqsiyad API: fictional people with faces, ethnicity, faith, careers and connections."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "MIT"
 keywords = ["fake data", "test data", "fixtures", "personas", "mock users", "seed"]
 dependencies = []

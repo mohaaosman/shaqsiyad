@@ -25,11 +25,11 @@ jobs:
       run:
         working-directory: ${{ matrix.package }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
         with:
           version: 10
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
@@ -45,11 +45,11 @@ jobs:
       matrix:
         package: [packages/react, packages/storybook]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
         with:
           version: 10
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
       # Both link to the local JS client, so build it first.
@@ -61,8 +61,8 @@ jobs:
   playground:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
       - run: node --test playground/*.test.js
@@ -74,11 +74,11 @@ jobs:
       run:
         working-directory: figma-plugin
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
         with:
           version: 10
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
       - run: pnpm install --frozen-lockfile
@@ -90,13 +90,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.9', '3.11', '3.13']
+        python: ['3.10', '3.12', '3.13']
     defaults:
       run:
         working-directory: packages/python
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
       - run: python -m unittest discover -s tests -v
@@ -114,8 +114,8 @@ jobs:
       run:
         working-directory: packages/go
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go }}
       - run: go vet ./... && go test ./...
@@ -131,7 +131,7 @@ jobs:
       run:
         working-directory: packages/php
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -144,5 +144,5 @@ jobs:
     name: openapi + postman
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: python3 scripts/check-contract.py
