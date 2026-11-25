@@ -38,10 +38,24 @@ Team list [industry=Healthcare]      ← on a repeat-grid parent, applies to eve
 
 Keys: `q`, `gender`, `minAge`, `maxAge`, `continent`, `country`, `ethnicity`, `religion`, `tier`, `mbti`, `relationship`, `industry`, `status`. Layer names like `#name [gender=male]` still match `#name`.
 
+## Component properties
+
+Instances fill their **text component properties** too — no `#` layers needed inside the component. Name a property after a field (`name`, `first`, `last`, `initials`, `age`, `job`, `title`, `company`, `city`, `country`, `email`, `phone`, `tagline`, `bio`, `ethnicity`, `religion`); case doesn't matter. Instances nested inside a selected frame are filled with that frame's person. A layer named `#avatar` inside the component still gets the portrait.
+
+## Variables
+
+Tick **Fill variables** to drive designs from variables instead of layers:
+
+1. Create a local variable collection named `Shaqsiyad`.
+2. Add **string** variables named after fields — `name`, `job`, `city`… (groups are fine: `Person/name`).
+3. Bind them to text in your frames, then select the frames and fill.
+
+Each frame gets its own mode, named after its person (`Amina`, `Tomás`, `Amina 2`), holding that person's values, and the frame is switched to it. Existing modes are reused in order and renamed; more are added as needed. If your Figma plan caps the number of modes, the plugin fills as many as it can and tells you.
+
 ## Run locally
 
 ```sh
-pnpm install && pnpm build   # type-checks, then bundles code.ts + logic.ts into dist/code.js
+pnpm install && pnpm build && pnpm test   # type-checks, then bundles code.ts + logic.ts into dist/code.js
 pnpm test                    # unit tests for the pure logic in logic.ts
 ```
 

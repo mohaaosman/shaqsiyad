@@ -6,10 +6,12 @@
   button { margin-top: 16px; width: 100%; padding: 10px; border: 0; border-radius: 8px; background: #1b2140; color: #f5f0e6; font-weight: 600; cursor: pointer; }
   p { color: #5c6075; margin: 0 0 4px; }
   .hint { font-size: 11px; }
+  .check { display: flex; align-items: center; gap: 6px; }
+  .check input { width: auto; margin: 0; }
   code { font-size: 10px; background: #eef0f6; padding: 0 3px; border-radius: 3px; }
 </style>
 <p>Select frames, then fill them with fictional people.</p>
-<p class="hint">Select one list frame to fill each same-named row. Add <code>[gender=female, country=Kenya]</code> to a frame's name to filter just that frame.</p>
+<p class="hint">Component instances get their text properties filled too: name them <code>name</code>, <code>job</code>, <code>city</code>… Select one list frame to fill each same-named row. Add <code>[gender=female, country=Kenya]</code> to a frame's name to filter just that frame.</p>
 <label>Gender
   <select id="gender"><option value="">Any</option><option value="female">Women</option><option value="male">Men</option></select>
 </label>
@@ -21,9 +23,11 @@
   <label>Max age <input id="maxAge" type="number" min="20" max="75" /></label>
 </div>
 <label>Seed (same seed → same people) <input id="seed" type="number" min="0" /></label>
+<label class="check"><input id="variables" type="checkbox" /> Fill variables</label>
+<p class="hint">Gives each frame its own mode of a <code>Shaqsiyad</code> variable collection, with string variables named <code>name</code>, <code>job</code>, <code>city</code>…</p>
 <button id="fill">Fill selection</button>
 <script>
   const value = (id) => document.getElementById(id).value;
   document.getElementById('fill').onclick = () =>
-    parent.postMessage({ pluginMessage: { type: 'fill', gender: value('gender'), continent: value('continent'), minAge: value('minAge'), maxAge: value('maxAge'), seed: value('seed') } }, '*');
+    parent.postMessage({ pluginMessage: { type: 'fill', gender: value('gender'), continent: value('continent'), minAge: value('minAge'), maxAge: value('maxAge'), seed: value('seed'), variables: document.getElementById('variables').checked } }, '*');
 </script>

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { baseFilters, buildQuery, chunkRequests, groupTargets, layerKey, parseFrameFilters, parseSeed, planTargets, textFor } from '../dist/test/logic.mjs';
+import { baseFilters, buildQuery, chunkRequests, componentPropertyValues, fieldKey, groupTargets, isShaqsiyadCollection, layerKey, parseFrameFilters, parseSeed, planModes, planTargets, textFor, variableValues } from '../dist/test/logic.mjs';
 
 const person = {
   fullName: 'Amina Hassan Farah',
@@ -77,4 +77,46 @@ test('textFor fills every layer, with sensible fallbacks', () => {
   assert.equal(t['#bio'], person.tagline);
   assert.equal(textFor({ ...person, bio: 'Nurse and poet.' })['#bio'], 'Nurse and poet.');
   assert.equal(textFor({ ...person, lastName: 'Farah', avatar: { initials: 'AF', sizes: { png: '' } } })['#last'], 'Farah');
+});
+
+test('fieldKey strips Figma id suffixes and groups, case-insensitively', () => {
+  assert.equal(fieldKey('Name#12:3'), 'name');
+  assert.equal(fieldKey('JOB'), 'job');
+  assert.equal(fieldKey('Person/City'), 'city');
+  assert.equal(fieldKey('Size'), null);
+});
+
+test('componentPropertyValues fills only matching TEXT properties', () => {
+  const values = componentPropertyValues(
+    { 'Name#1:0': { type: 'TEXT' }, 'job#2:1': { type: 'TEXT' }, 'Show avatar#3:2': { type: 'BOOLEAN' }, 'Size': { type: 'VARIANT' }, 'name#9:9': { type: 'BOOLEAN' } },
+    person
+  );
+  assert.deepEqual(values, { 'Name#1:0': 'Amina Hassan Farah', 'job#2:1': 'Nurse' });
+});
+
+test('variableValues maps STRING variables named after fields', () => {
+  const vars = [
+    { id: 'v1', name: 'name', resolvedType: 'STRING' },
+    { id: 'v2', name: 'Person/City', resolvedType: 'STRING' },
+    { id: 'v3', name: 'age', resolvedType: 'FLOAT' },
+    { id: 'v4', name: 'brand', resolvedType: 'STRING' }
+  ];
+  assert.deepEqual(variableValues(vars, person), [
+    { id: 'v1', value: 'Amina Hassan Farah' },
+    { id: 'v2', value: 'Nairobi' }
+  ]);
+});
+
+test('isShaqsiyadCollection ignores case and spaces', () => {
+  assert.equal(isShaqsiyadCollection(' ShaqSiyad '), true);
+  assert.equal(isShaqsiyadCollection('Shaqsiyad people'), false);
+});
+
+test('planModes reuses existing modes, then adds, with unique names', () => {
+  assert.deepEqual(planModes([{ modeId: 'm1', name: 'Mode 1' }], ['Amina', 'Amina', 'Tomás', '']), [
+    { kind: 'reuse', modeId: 'm1', name: 'Amina' },
+    { kind: 'add', name: 'Amina 2' },
+    { kind: 'add', name: 'Tomás' },
+    { kind: 'add', name: 'Person 4' }
+  ]);
 });

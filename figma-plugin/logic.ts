@@ -27,6 +27,7 @@ export interface FillRequest {
   minAge?: string;
   maxAge?: string;
   seed?: string;
+  variables?: boolean;
 }
 
 export type Filters = Record<string, string>;
@@ -140,4 +141,68 @@ export function textFor(p: Person): Record<string, string> {
 /** Layer names are matched without their `[filters]` suffix, so `#name [gender=male]` still gets the name. */
 export function layerKey(name: string): string {
   return name.replace(/\s*\[[^\]]*\]\s*$/, '').trim();
+}
+
+// ---- Component properties and variables -------------------------------------------------------
+
+/** Field keys a component property or variable may be named after (the layer keys without `#`). */
+export const FIELD_KEYS = ['name', 'first', 'last', 'initials', 'age', 'job', 'title', 'company', 'city', 'country', 'email', 'phone', 'tagline', 'bio', 'ethnicity', 'religion'];
+
+/** `Name#12:3` → `name`; `Person/Job` → `job`. Returns null when it isn't one of FIELD_KEYS. */
+export function fieldKey(name: string): string | null {
+  const bare = name.split('#')[0].split('/').pop()!.trim().toLowerCase();
+  return FIELD_KEYS.includes(bare) ? bare : null;
+}
+
+/** Values for an instance's TEXT component properties whose names match a field: `{ 'name#12:3': 'Amina Farah' }`. */
+export function componentPropertyValues(properties: Record<string, { type: string }>, person: Person): Record<string, string> {
+  const texts = textFor(person);
+  const values: Record<string, string> = {};
+  for (const [key, prop] of Object.entries(properties)) {
+    if (prop.type !== 'TEXT') continue;
+    const field = fieldKey(key);
+    if (field) values[key] = texts[`#${field}`];
+  }
+  return values;
+}
+
+export interface VariableLike {
+  id: string;
+  name: string;
+  resolvedType: string;
+}
+
+/** STRING variables named after a field, with the value each should take for this person. */
+export function variableValues(variables: readonly VariableLike[], person: Person): { id: string; value: string }[] {
+  const texts = textFor(person);
+  const out: { id: string; value: string }[] = [];
+  for (const v of variables) {
+    if (v.resolvedType !== 'STRING') continue;
+    const field = fieldKey(v.name);
+    if (field) out.push({ id: v.id, value: texts[`#${field}`] });
+  }
+  return out;
+}
+
+export const COLLECTION_NAME = 'shaqsiyad';
+
+export function isShaqsiyadCollection(name: string): boolean {
+  return name.trim().toLowerCase() === COLLECTION_NAME;
+}
+
+export type ModeAction = { kind: 'reuse'; modeId: string; name: string } | { kind: 'add'; name: string };
+
+/**
+ * One mode per person: reuse the collection's existing modes in order (renamed to the person),
+ * then add the rest. Names are made unique (`Amina`, `Amina 2`).
+ */
+export function planModes(existing: readonly { modeId: string; name: string }[], firstNames: readonly string[]): ModeAction[] {
+  const seen = new Map<string, number>();
+  return firstNames.map((first, i) => {
+    const base = first.trim() || `Person ${i + 1}`;
+    const n = (seen.get(base) ?? 0) + 1;
+    seen.set(base, n);
+    const name = n === 1 ? base : `${base} ${n}`;
+    return i < existing.length ? { kind: 'reuse', modeId: existing[i].modeId, name } : { kind: 'add', name };
+  });
 }
