@@ -158,6 +158,19 @@ jobs:
       - run: ruby -Ilib -Itest test/test_shaqsiyad.rb
       - run: gem build shaqsiyad.gemspec
 
+  dotnet:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/dotnet
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet test
+      - run: dotnet pack src/Shaqsiyad -c Release -o "$RUNNER_TEMP/nupkg"
+
   contract:
     name: openapi + postman
     runs-on: ubuntu-latest
