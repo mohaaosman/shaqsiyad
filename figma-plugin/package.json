@@ -1,6 +1,15 @@
 {
   "name": "shaqsiyad-figma-plugin",
   "private": true,
-  "scripts": { "build": "tsc" },
-  "devDependencies": { "@figma/plugin-typings": "^1.120.0", "typescript": "^5.9.3" }
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && esbuild code.ts --bundle --format=iife --target=es2017 --outfile=dist/code.js",
+    "test": "esbuild logic.ts --format=esm --outfile=dist/test/logic.mjs --log-level=warning && node --test test/*.test.mjs"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.120.0",
+    "esbuild": "0.25.12",
+    "typescript": "^5.9.3"
+  },
+  "version": "0.4.0"
 }

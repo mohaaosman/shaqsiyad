@@ -32,6 +32,30 @@ from shaqsiyad import Shaqsiyad                   # pip install shaqsiyad
 people = Shaqsiyad().random(5, seed=1)
 ```
 
+<details><summary>Go, PHP, Ruby, C#</summary>
+
+```go
+people, err := shaqsiyad.New().Random(ctx, shaqsiyad.RandomParams{Count: 5, Seed: shaqsiyad.Seed(1)})
+```
+
+```php
+$people = (new Shaqsiyad\Shaqsiyad())->random(5, ['seed' => 1]);   // composer require shaqsiyad/shaqsiyad
+```
+
+```ruby
+people = Shaqsiyad.new.random(5, seed: 1)                          # gem install shaqsiyad
+```
+
+```csharp
+var people = await new ShaqsiyadClient().RandomAsync(new RandomParams { Count = 5, Seed = 1 }); // dotnet add package Shaqsiyad
+```
+
+</details>
+
+```sh
+npx shaqsiyad fixtures users --count 100 --seed 1 --format csv > users.csv   # or the CLI
+```
+
 ```sh
 claude mcp add shaqsiyad -- npx -y shaqsiyad-mcp  # agents get the people too
 ```
@@ -59,11 +83,13 @@ Each profile also has a 1200×630 share card at `/people/{slug}/card.png`, used 
 
 | | |
 |---|---|
-| **Seeding dev/staging databases** | `/fixtures?shape=users&count=100&seed=1&format=csv` — realistic, GDPR-safe |
-| **Design mockups** | [Figma plugin](figma-plugin): name layers `#name`, `#avatar`, `#job` and fill a whole screen |
+| **Seeding dev/staging databases** | `/fixtures?shape=users&count=100&seed=1&format=csv` — realistic, GDPR-safe. [Recipes](examples/seeders.md) for Prisma, Django, Rails and more |
+| **Tests without network** | `npx shaqsiyad pull --count 1000 --out people.json`, then `new Shaqsiyad({ snapshot: 'people.json' })` |
+| **Replacing Faker** | `createFaker({ seed: 1 })` from `shaqsiyad/faker` — `person.fullName()`, `internet.email()`… from whole, consistent people |
+| **Design mockups** | [Figma plugin](figma-plugin): name layers `#name`, `#avatar`, `#job` and fill a whole screen; [Storybook loader](packages/storybook) and [React hooks](packages/react) for components |
 | **Sales demos** | Believable CRM, HR, bank and clinic screens |
 | **QA** | Diacritics, hyphens, long and short names, many scripts' transliterations |
-| **AI agents + evals** | Role-play users with real constraints (faith, family, job) via the MCP server |
+| **AI agents + evals** | Role-play users with real constraints (faith, family, job) via the MCP server's [`roleplay_user` prompt](examples/agent-roleplay.md) |
 | **Teaching** | A rich, safe dataset for SQL, pandas and charts classes |
 | **Games + fiction** | NPCs with histories and relationships |
 
@@ -71,13 +97,22 @@ Each profile also has a 1200×630 share card at `/people/{slug}/card.png`, used 
 
 | Folder | |
 |---|---|
-| [`packages/js`](packages/js) | `shaqsiyad` on npm — typed, zero dependencies |
-| [`packages/python`](packages/python) | `shaqsiyad` on PyPI — standard library only |
-| [`packages/mcp`](packages/mcp) | `shaqsiyad-mcp` — MCP server for Claude and other agents |
-| [`figma-plugin`](figma-plugin) | Fill frames with people |
-| [`examples`](examples) | curl, fetch, Python, Laravel seeder, React list, Postgres CSV import |
+| [`packages/js`](packages/js) | `shaqsiyad` on npm — typed client + CLI, zero dependencies |
+| [`packages/python`](packages/python) | `shaqsiyad` on PyPI — client + CLI, standard library only |
+| [`packages/go`](packages/go) | Go module — zero dependencies, `context.Context` everywhere |
+| [`packages/php`](packages/php) | `shaqsiyad/shaqsiyad` for Composer — PHP 8.1+, zero runtime dependencies |
+| [`packages/ruby`](packages/ruby) | `shaqsiyad` gem — Ruby 3.1+, standard library only |
+| [`packages/dotnet`](packages/dotnet) | `Shaqsiyad` on NuGet — .NET 8, async, `IAsyncEnumerable` paging |
+| [`packages/mcp`](packages/mcp) | `shaqsiyad-mcp` — MCP tools, resource, role-play and user-panel prompts for Claude and other agents |
+| [`packages/react`](packages/react) | `shaqsiyad-react` — `usePeople`, `useSearch`, `usePerson`, `useFixtures`, `<Avatar>` |
+| [`packages/storybook`](packages/storybook) | `shaqsiyad-storybook` — loader + decorator that put people in `context.loaded` |
+| [`playground`](playground) | Build a query in the browser and copy it as curl, JS, Python, CLI or Go |
+| [`figma-plugin`](figma-plugin) | Fill frames, component properties and variable modes with people |
+| [`examples`](examples) | curl, fetch, Python, CLI, [seeders](examples/seeders.md) (Prisma, Drizzle, Django, Rails, Supabase, Laravel, Postgres), React list, agent role-play |
 | [`vscode`](vscode) | Snippets |
-| [`openapi.json`](openapi.json), [`postman`](postman) | The contract |
+| [`openapi.json`](openapi.json), [`postman`](postman) | The contract — [`scripts/check-contract.py`](scripts/check-contract.py) keeps the SDKs in line with it |
+
+What's next: [`ROADMAP.md`](ROADMAP.md) · What changed: [`CHANGELOG.md`](CHANGELOG.md)
 
 The generator, the dataset and the site are maintained privately; this repo holds everything you need to use them.
 

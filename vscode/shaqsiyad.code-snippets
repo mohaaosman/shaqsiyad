@@ -16,11 +16,52 @@
   "Shaqsiyad: client": {
     "scope": "javascript,typescript",
     "prefix": "shq-client",
-    "body": ["import { Shaqsiyad } from 'shaqsiyad';", "", "const api = new Shaqsiyad();", "const people = await api.random({ count: ${1:5}, seed: ${2:1} });"]
+    "body": [
+      "import { Shaqsiyad } from 'shaqsiyad';",
+      "",
+      "const api = new Shaqsiyad();",
+      "const people = await api.random({ count: ${1:5}, seed: ${2:1} });"
+    ]
   },
   "Shaqsiyad: Python client": {
     "scope": "python",
     "prefix": "shq-client",
-    "body": ["from shaqsiyad import Shaqsiyad", "", "api = Shaqsiyad()", "people = api.random(${1:5}, seed=${2:1})"]
+    "body": [
+      "from shaqsiyad import Shaqsiyad",
+      "",
+      "api = Shaqsiyad()",
+      "people = api.random(${1:5}, seed=${2:1})"
+    ]
+  },
+  "Shaqsiyad: every match (searchAll)": {
+    "scope": "javascript,typescript",
+    "prefix": "shq-all",
+    "body": [
+      "for await (const person of api.searchAll({ ${1:q: '${2:nurse}'}, max: ${3:500} })) {",
+      "  $0",
+      "}"
+    ]
+  },
+  "Shaqsiyad: Python every match": {
+    "scope": "python",
+    "prefix": "shq-all",
+    "body": [
+      "for person in api.search_all(${1:\"nurse\"}, max=${2:500}):",
+      "    $0"
+    ]
+  },
+  "Shaqsiyad: test fixture (vitest/jest)": {
+    "scope": "javascript,typescript",
+    "prefix": "shq-test",
+    "body": [
+      "import { Shaqsiyad } from 'shaqsiyad';",
+      "",
+      "const api = new Shaqsiyad();",
+      "let ${1:users}: Record<string, unknown>[];",
+      "",
+      "beforeAll(async () => {",
+      "  ${1:users} = await api.fixtures('${2|users,customers,employees,patients|}', { count: ${3:10}, seed: ${4:1} });",
+      "});"
+    ]
   }
 }

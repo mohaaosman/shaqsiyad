@@ -1,0 +1,179 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    name: ${{ matrix.package }} (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [packages/js, packages/mcp]
+        node: [18, 20, 22]
+        exclude:
+          # The MCP SDK needs Node 20+ for its transitive deps' engines.
+          - package: packages/mcp
+            node: 18
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+          cache-dependency-path: ${{ matrix.package }}/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+
+  react-storybook:
+    name: ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [packages/react, packages/storybook]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      # Both link to the local JS client, so build it first.
+      - run: pnpm install --frozen-lockfile && pnpm build
+        working-directory: packages/js
+      - run: pnpm install --frozen-lockfile && pnpm test
+        working-directory: ${{ matrix.package }}
+
+  playground:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: node --test playground/*.test.js
+
+  figma:
+    name: figma-plugin
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: figma-plugin
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build && pnpm test
+
+  python:
+    name: python (${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.12', '3.13']
+    defaults:
+      run:
+        working-directory: packages/python
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m unittest discover -s tests -v
+        env:
+          PYTHONPATH: src
+
+  go:
+    name: go (${{ matrix.go }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.23', '1.24']
+    defaults:
+      run:
+        working-directory: packages/go
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go }}
+      - run: go vet ./... && go test ./...
+
+  php:
+    name: php (${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.1', '8.2', '8.3']
+    defaults:
+      run:
+        working-directory: packages/php
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl
+          coverage: none
+      - run: composer install --no-interaction --no-progress
+      - run: vendor/bin/phpunit
+
+  ruby:
+    name: ruby (${{ matrix.ruby }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ['3.3', '3.4']
+    defaults:
+      run:
+        working-directory: packages/ruby
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - run: ruby -Ilib -Itest test/test_shaqsiyad.rb
+      - run: gem build shaqsiyad.gemspec
+
+  dotnet:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/dotnet
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet test
+      - run: dotnet pack src/Shaqsiyad -c Release -o "$RUNNER_TEMP/nupkg"
+
+  contract:
+    name: openapi + postman
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 scripts/check-contract.py

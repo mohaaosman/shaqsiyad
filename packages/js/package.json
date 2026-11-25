@@ -1,16 +1,60 @@
 {
   "name": "shaqsiyad",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Typed client for the Shaqsiyad API: fictional people with faces, ethnicity, faith, careers and connections.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist"],
-  "scripts": { "build": "tsc" },
-  "keywords": ["fake data", "test data", "fixtures", "personas", "mock users", "avatars", "seed"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./faker": {
+      "types": "./dist/faker.d.ts",
+      "import": "./dist/faker.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "faker": [
+        "./dist/faker.d.ts"
+      ]
+    }
+  },
+  "bin": {
+    "shaqsiyad": "./dist/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc && node --test test/*.test.js"
+  },
+  "keywords": [
+    "fake data",
+    "test data",
+    "fixtures",
+    "personas",
+    "mock users",
+    "avatars",
+    "seed",
+    "cli",
+    "faker",
+    "offline"
+  ],
   "license": "MIT",
-  "repository": { "type": "git", "url": "https://github.com/mohaaosman/shaqsiyad", "directory": "packages/js" },
-  "engines": { "node": ">=18" },
-  "devDependencies": { "typescript": "^5.9.3", "@types/node": "^22.10.0" }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohaaosman/shaqsiyad",
+    "directory": "packages/js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@types/node": "^22.10.0"
+  }
 }

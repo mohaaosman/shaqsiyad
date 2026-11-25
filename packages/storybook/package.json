@@ -1,0 +1,45 @@
+{
+  "name": "shaqsiyad-storybook",
+  "version": "0.1.0",
+  "description": "Storybook loader and decorator that give stories seeded fictional people from the Shaqsiyad API.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc && node --test test/*.test.js"
+  },
+  "keywords": [
+    "storybook",
+    "storybook-addon",
+    "fake data",
+    "mock users",
+    "personas",
+    "fixtures"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohaaosman/shaqsiyad",
+    "directory": "packages/storybook"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "shaqsiyad": ">=0.2.0"
+  },
+  "devDependencies": {
+    "shaqsiyad": "link:../js",
+    "typescript": "5.9.3"
+  }
+}

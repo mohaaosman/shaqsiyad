@@ -816,13 +816,26 @@
         ],
         "responses": {
           "200": {
-            "description": "Array of records in the chosen shape",
+            "description": "Array of records in the chosen shape (UserFixture, CustomerFixture, EmployeeFixture or PatientFixture)",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object"
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/UserFixture"
+                      },
+                      {
+                        "$ref": "#/components/schemas/CustomerFixture"
+                      },
+                      {
+                        "$ref": "#/components/schemas/EmployeeFixture"
+                      },
+                      {
+                        "$ref": "#/components/schemas/PatientFixture"
+                      }
+                    ]
                   }
                 }
               }
@@ -1612,6 +1625,138 @@
             }
           }
         }
+      },
+      "UserFixture": {
+        "type": "object",
+        "description": "shape=users: an app account. Only these fields are documented so far; records may carry more.",
+        "required": [
+          "id",
+          "fullName",
+          "email"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "shq_00042"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Always on an example.com-style domain"
+          }
+        },
+        "additionalProperties": true
+      },
+      "CustomerFixture": {
+        "type": "object",
+        "description": "shape=customers: a CRM or shop customer. Only these fields are documented so far; records may carry more.",
+        "required": [
+          "id",
+          "fullName",
+          "email"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "shq_00042"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Always on an example.com-style domain"
+          },
+          "customerNumber": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "postcode": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          },
+          "company": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "incomeBand": {
+            "type": "string"
+          },
+          "customerSince": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "EmployeeFixture": {
+        "type": "object",
+        "description": "shape=employees: an HR record. Only these fields are documented so far; records may carry more.",
+        "required": [
+          "id",
+          "fullName",
+          "email"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "shq_00042"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Always on an example.com-style domain"
+          }
+        },
+        "additionalProperties": true
+      },
+      "PatientFixture": {
+        "type": "object",
+        "description": "shape=patients: a clinic record. Only these fields are documented so far; records may carry more.",
+        "required": [
+          "id",
+          "fullName",
+          "email"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "shq_00042"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Always on an example.com-style domain"
+          }
+        },
+        "additionalProperties": true
       }
     }
   }

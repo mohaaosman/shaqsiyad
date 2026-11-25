@@ -13,6 +13,18 @@ MCP server for the [Shaqsiyad API](https://github.com/mohaaosman/shaqsiyad). Let
 | `get_households` | People with partner and children |
 | `get_team` | A manager and reports |
 | `get_graph` | Connections around a person |
+| `get_stats` | Totals and every facet value — handy for picking valid filters |
+| `get_avatar` | A portrait as an image the model can see |
+| `find_household_for` | Households from the same country, ethnic group and religion as a person — neighbours, family friends |
+| `find_team_for` | Colleagues in a person's own industry, with the person as the anchor |
+
+## Resources and prompts
+
+| | |
+|---|---|
+| `shaqsiyad://people/{id}` | A complete profile as a resource |
+| `roleplay_user` prompt | Role-play a person (`id`) through a `scenario` — "open a savings account", "book a clinic visit" — in character, for testing products and agents |
+| `user_panel` prompt | A moderated panel of `size` people (default 5, max 12, seeded) reacting to a `brief`, in character, then a summary of agreements, disagreements and requested changes |
 
 ## Claude Code
 
@@ -31,3 +43,9 @@ claude mcp add shaqsiyad -- npx -y shaqsiyad-mcp
 ```
 
 Set `SHAQSIYAD_BASE_URL` in `env` to use another server.
+
+## Develop
+
+```sh
+pnpm install && pnpm test
+```

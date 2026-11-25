@@ -4,13 +4,22 @@ build-backend = "hatchling.build"
 
 [project]
 name = "shaqsiyad"
-version = "0.1.0"
+version = "0.3.0"
 description = "Client for the Shaqsiyad API: fictional people with faces, ethnicity, faith, careers and connections."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "MIT"
 keywords = ["fake data", "test data", "fixtures", "personas", "mock users", "seed"]
 dependencies = []
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Testing",
+  "Typing :: Typed",
+]
+
+[project.scripts]
+shaqsiyad = "shaqsiyad.__main__:main"
 
 [project.urls]
 Homepage = "https://github.com/mohaaosman/shaqsiyad"
