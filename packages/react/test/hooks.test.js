@@ -141,3 +141,28 @@ test('Avatar renders an img, then initials when it fails', async () => {
   assert.equal(fallback.textContent, 'AF');
   assert.equal(fallback.getAttribute('aria-label'), 'Amina Farah');
 });
+
+test('Avatar resolves host-relative avatar paths against the client base URL', async () => {
+  const { client } = fakeClient(() => ({ body: {} }));
+  const person = { fullName: 'Amina Farah', avatar: { url: '/v1/personas/shq_1/avatar', initials: 'AF' } };
+  await act(async () => root.render(h(ShaqsiyadProvider, { client }, h(Avatar, { person }))));
+  assert.equal(container.querySelector('img').getAttribute('src'), 'https://api.test/v1/personas/shq_1/avatar');
+});
+
+test('a stale failure does not evict the refetched cache entry', async () => {
+  let n = 0;
+  const { client, calls } = fakeClient(() => (++n === 1 ? { status: 500, body: { error: 'boom' } } : { body: [{ id: 'ok' }] }), { random: 30 });
+  let refetch;
+  const Probe = () => {
+    const q = usePeople({ count: 1, seed: 9 });
+    refetch = q.refetch;
+    return null;
+  };
+  await act(async () => root.render(h(ShaqsiyadProvider, { client }, h(Probe))));
+  await act(async () => refetch()); // second request replaces the pending first one
+  await act(() => new Promise((r) => setTimeout(r, 80))); // first fails, second succeeds
+  const Second = () => (usePeople({ count: 1, seed: 9 }), null);
+  await act(async () => root.render(h(ShaqsiyadProvider, { client }, h(Probe), h(Second))));
+  await act(() => new Promise((r) => setTimeout(r, 50)));
+  assert.equal(calls.length, 2, 'the second mount should reuse the cached refetch');
+});

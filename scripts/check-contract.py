@@ -75,7 +75,26 @@ for name in fixture_schemas:
     if not re.search(rf"^class {name}\(", py_src, re.M):
         problems.append(f"python: no {name} TypedDict")
 
+# Go and C# name every filter explicitly; PHP and Ruby pass filters through, so only endpoints are checked there.
+typed_sdks = {
+    "go": [ROOT / "packages/go/shaqsiyad.go"],
+    "dotnet": sorted((ROOT / "packages/dotnet/src/Shaqsiyad").glob("*.cs")),
+}
+passthrough_sdks = {
+    "php": [ROOT / "packages/php/src/Shaqsiyad.php"],
+    "ruby": [ROOT / "packages/ruby/lib/shaqsiyad.rb"],
+}
+for label, files in {**typed_sdks, **passthrough_sdks}.items():
+    src = "\n".join(f.read_text() for f in files)
+    for endpoint in ["/personas", "/personas/random", "/fixtures", "/households", "/teams", "/stats", "/sheet.png"]:
+        if f'"{endpoint}' not in src and f"'{endpoint}" not in src:
+            problems.append(f"{label}: no call to {endpoint}")
+    if label in typed_sdks:
+        for name in filters:
+            if f'"{name}"' not in src:
+                problems.append(f"{label}: filter `{name}` is never sent")
+
 if problems:
     print("\n".join(problems))
     sys.exit(1)
-print(f"ok: {len(paths)} endpoints, {len(filters)} filters and {len(fixture_schemas)} fixture shapes agree across openapi, postman, js, python and mcp")
+print(f"ok: {len(paths)} endpoints, {len(filters)} filters and {len(fixture_schemas)} fixture shapes agree across openapi, postman, js, python, mcp, go, php, ruby and dotnet")

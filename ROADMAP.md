@@ -1,39 +1,32 @@
 # Roadmap
 
-What's shipped in this repo and what comes next. Ideas and votes welcome in issues.
+Everything planned for this repo has shipped. New ideas are welcome in issues.
 
 ## ✅ 0.1 — Use it anywhere
 - JS and Python SDKs, MCP server, Figma plugin, OpenAPI spec, Postman collection, VS Code snippets, examples.
 
 ## ✅ 0.2 — Trust it
-- CLI in both SDKs (`npx shaqsiyad`, `pipx run shaqsiyad`).
-- Paging iterators (`searchAll` / `search_all`), `fields` trimming, timeouts, retries on `429`/`5xx`.
-- MCP: `get_stats`, `get_avatar` (image), person resource, `roleplay_user` prompt, all 13 filters.
-- Tests for every package, CI matrix, contract check across spec/Postman/SDKs, tag-driven releases.
-- Figma plugin build and runtime fixes.
+- CLI in both SDKs, paging iterators, `fields` trimming, timeouts, retries on `429`/`5xx`.
+- MCP: `get_stats`, `get_avatar`, person resource, `roleplay_user` prompt, all 13 filters.
+- Tests for every package, CI, contract check, tag-driven releases.
 
 ## ✅ 0.3 — Seed anything
-- [x] Typed fixture records (`UserFixture`, `CustomerFixture`, `EmployeeFixture`, `PatientFixture`) in the OpenAPI spec and both SDKs.
-- [x] Seeder recipes: [Prisma, Drizzle, Django, Rails, Supabase](examples/seeders.md), alongside Laravel and Postgres.
-- [x] Faker-style adapter: `shaqsiyad/faker` (JS) and `shaqsiyad.faker` (Python), backed by seeded people.
-- [x] Offline snapshot: `shaqsiyad pull --seed 1 --count 1000 --out people.json`, then `snapshot:` in either SDK (or `--snapshot` on the CLI) for CI without network.
+- Typed fixture records in the spec and SDKs.
+- [Seeder recipes](examples/seeders.md): Prisma, Drizzle, Django, Rails, Supabase, Laravel, Postgres.
+- Faker-style adapter (`shaqsiyad/faker`, `shaqsiyad.faker`).
+- Offline snapshots: `shaqsiyad pull`, then `snapshot:` in the SDKs or `--snapshot` on the CLI.
 
 ## ✅ 0.4 — Design and agents
-- [x] Figma plugin: `#phone`, `#company`, `#bio`, `#initials`, `#last`, `#title`; per-frame filters in frame names (`Card [gender=female]`); repeat-grid fill; selections over 50.
-- [x] MCP: `find_household_for`, `find_team_for` and a `user_panel` prompt that runs a panel of people against a brief.
-- [x] Go and PHP SDKs with the same tests as JS and Python.
+- Figma: more layers, per-frame filters, repeat grids, big selections, **component properties** and **variable modes**.
+- MCP: `find_household_for`, `find_team_for`, `user_panel` prompt.
+- SDKs for **Go, PHP, Ruby and C#**, with the same tests as JS and Python.
 
-## ✅ Later — shipped early
-- [x] React hooks (`shaqsiyad-react`: `usePeople`, `useSearch`, `usePerson`, `useFixtures`, `<Avatar>`).
-- [x] Storybook loader and decorator (`shaqsiyad-storybook`).
-- [x] Web [playground](playground) for building queries and copying them as curl, JS, Python, CLI or Go.
+## ✅ Later — shipped
+- React hooks (`shaqsiyad-react`), Storybook loader (`shaqsiyad-storybook`), web [playground](playground).
 
-## Generator backlog (not in this repo)
-These need the private generator and dataset, so they're tracked there:
-- Locale-aware fixtures — address and phone formats per country.
-- Documented field layouts for `employees` and `patients` fixtures, so the typed records can cover every field.
+## Outside this repo
 
-## Next
-- Publish 0.3 to npm and PyPI, and 0.1 of the Go, PHP, React and Storybook packages.
-- Ruby and C# SDKs.
-- Figma: component-property fill and variable modes.
+Two things can't be done from this repository. They're listed so nothing is hidden:
+
+- **Publishing** the packages to npm, PyPI, RubyGems, NuGet and Packagist needs the maintainer's registry accounts. Everything else is automated: see [`RELEASING.md`](RELEASING.md).
+- **Generator work** lives with the private dataset: locale-specific address and phone formats per country, and documented field layouts for `employees` and `patients` fixtures. When it lands, the SDK types and the contract check pick it up.

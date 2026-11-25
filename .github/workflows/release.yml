@@ -6,12 +6,15 @@ name: Release
 #   git tag react-v0.1.0  && git push origin react-v0.1.0   → shaqsiyad-react on npm
 #   git tag storybook-v0.1.0 && git push origin storybook-v0.1.0 → shaqsiyad-storybook on npm
 #   git tag python-v0.2.0 && git push origin python-v0.2.0  → shaqsiyad on PyPI
+#   git tag ruby-v0.1.0   && git push origin ruby-v0.1.0    → shaqsiyad gem on RubyGems
+#   git tag dotnet-v0.1.0 && git push origin dotnet-v0.1.0  → Shaqsiyad on NuGet
 #   git tag packages/go/v0.1.0 && git push origin packages/go/v0.1.0 → Go module (no job needed; the Go proxy reads the tag)
-# npm needs an NPM_TOKEN secret. PyPI uses trusted publishing: add this repo + workflow as a publisher on pypi.org.
+#   PHP: register the repo on packagist.org once (package path packages/php); it then follows tags.
+# Secrets: NPM_TOKEN, RUBYGEMS_API_KEY, NUGET_API_KEY. PyPI uses trusted publishing: add this repo + workflow as a publisher on pypi.org.
 
 on:
   push:
-    tags: ['js-v*', 'mcp-v*', 'react-v*', 'storybook-v*', 'python-v*']
+    tags: ['js-v*', 'mcp-v*', 'react-v*', 'storybook-v*', 'python-v*', 'ruby-v*', 'dotnet-v*']
 
 permissions:
   contents: read
@@ -70,3 +73,41 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: packages/python/dist
+
+  rubygems:
+    if: startsWith(github.ref_name, 'ruby-v')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/ruby
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+      - name: Tag matches gem version
+        run: grep -q "VERSION = \"${GITHUB_REF_NAME#ruby-v}\"" lib/shaqsiyad/version.rb
+      - run: ruby -Ilib -Itest test/test_shaqsiyad.rb
+      - run: gem build shaqsiyad.gemspec
+      - run: gem push "shaqsiyad-${GITHUB_REF_NAME#ruby-v}.gem"
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+
+  nuget:
+    if: startsWith(github.ref_name, 'dotnet-v')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/dotnet
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+      - name: Tag matches csproj version
+        run: grep -q "<Version>${GITHUB_REF_NAME#dotnet-v}</Version>" src/Shaqsiyad/Shaqsiyad.csproj
+      - run: dotnet test
+      - run: dotnet pack src/Shaqsiyad -c Release -o out
+      - run: dotnet nuget push "out/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

@@ -106,3 +106,18 @@ test('cli prints help and builds avatar URLs without network', async () => {
   await run(['avatar', 'shq_1', '--size', '64', '--base-url', BASE], (t) => (text += t));
   assert.equal(text, `${BASE}/personas/shq_1/avatar?size=64\n`);
 });
+
+test('an empty SHAQSIYAD_BASE_URL falls back to the public API', () => {
+  const old = process.env.SHAQSIYAD_BASE_URL;
+  process.env.SHAQSIYAD_BASE_URL = '';
+  try {
+    assert.equal(new Shaqsiyad().baseUrl, 'https://shaqsiyad.example/api/v1');
+  } finally {
+    if (old === undefined) delete process.env.SHAQSIYAD_BASE_URL;
+    else process.env.SHAQSIYAD_BASE_URL = old;
+  }
+});
+
+test('boolean flags never swallow the next argument', () => {
+  assert.deepEqual(parseArgs(['search', '--all', 'nurse', '--compact', 'x']), { positional: ['search', 'nurse', 'x'], flags: { all: true, compact: true } });
+});

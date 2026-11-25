@@ -66,7 +66,11 @@ export function useQuery<T>(key: string | null, load: (client: Client) => Promis
     if (!promise) {
       promise = loadRef.current(client);
       cache.set(key, promise);
-      promise.catch(() => cache.delete(key));
+      const mine = promise;
+      // Only evict our own entry: a refetch may already have replaced it.
+      mine.catch(() => {
+        if (cache.get(key) === mine) cache.delete(key);
+      });
     }
     setState((s) => ({ key, data: s.key === key ? s.data : undefined, loading: true }));
     promise.then(
@@ -136,9 +140,20 @@ const initialsOf = (p: AvatarPerson) =>
     .join('')
     .toUpperCase();
 
+/** The API serves avatar paths relative to its own host, so resolve them against the client's base URL. */
+function resolveAvatar(src: string | undefined, baseUrl: string): string | undefined {
+  if (!src || /^[a-z][a-z\d+.-]*:/i.test(src)) return src;
+  try {
+    return new URL(src, baseUrl).href;
+  } catch {
+    return src;
+  }
+}
+
 /** A round portrait that falls back to initials if the image can't load. */
 export function Avatar({ person, size = 64, style, ...rest }: AvatarProps) {
-  const src = typeof person.avatar === 'string' ? person.avatar : person.avatar.url;
+  const client = useShaqsiyad();
+  const src = resolveAvatar(typeof person.avatar === 'string' ? person.avatar : person.avatar.url, client.url(''));
   const [failed, setFailed] = useState(false);
   useEffect(() => setFailed(false), [src]);
   const base = { width: size, height: size, borderRadius: '50%', ...style };

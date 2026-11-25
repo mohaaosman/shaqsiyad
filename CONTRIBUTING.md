@@ -18,11 +18,15 @@ cd packages/react && pnpm install && pnpm test        # needs packages/js built
 cd packages/storybook && pnpm install && pnpm test    # needs packages/js built
 cd figma-plugin && pnpm install && pnpm build && pnpm test
 node --test playground/*.test.js
+cd packages/go && go vet ./... && go test ./...
+cd packages/php && composer install && vendor/bin/phpunit
+cd packages/ruby && ruby -Ilib -Itest test/test_shaqsiyad.rb
+cd packages/dotnet && dotnet test
 python3 scripts/check-contract.py   # spec, Postman and SDKs agree
 ```
 
-Adding a filter or endpoint? Update `openapi.json`, the Postman collection, both SDKs and the MCP server together — the contract check will tell you what you missed.
+Adding a filter or endpoint? Update `openapi.json`, the Postman collection, every SDK and the MCP server together. The contract check will tell you what you missed (for PHP and Ruby, which pass filters through, it checks endpoints only).
 
 ## Releasing
 
-Bump the version in the package, add a `CHANGELOG.md` entry, then push a tag: `js-v0.2.0`, `mcp-v0.2.0` or `python-v0.2.0`.
+See [`RELEASING.md`](RELEASING.md).

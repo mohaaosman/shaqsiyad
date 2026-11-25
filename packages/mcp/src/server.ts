@@ -27,7 +27,7 @@ const filters = {
 const seed = z.number().int().min(0).optional().describe('Same seed + same filters returns the same people');
 
 export function createServer(options: ServerOptions = {}): McpServer {
-  const baseUrl = (options.baseUrl ?? process.env.SHAQSIYAD_BASE_URL ?? DEFAULT_BASE_URL).replace(/\/$/, '');
+  const baseUrl = (options.baseUrl || process.env.SHAQSIYAD_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, '');
   const fetcher = options.fetch ?? ((input, init) => fetch(input, init));
 
   const url = (path: string, query: Record<string, unknown> = {}) => {

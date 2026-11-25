@@ -33,6 +33,9 @@ Options
 const FORMATS = new Set(['csv', 'ndjson']);
 const SHAPES = new Set<Shape>(['users', 'customers', 'employees', 'patients']);
 
+/** Flags that never take a value, so `--all nurse` keeps `nurse` as the query. */
+const BOOLEAN_FLAGS = new Set(['all', 'compact', 'help']);
+
 export function parseArgs(argv: string[]): { positional: string[]; flags: Record<string, string | true> } {
   const positional: string[] = [];
   const flags: Record<string, string | true> = {};
@@ -43,6 +46,7 @@ export function parseArgs(argv: string[]): { positional: string[]; flags: Record
       const [key, inline] = arg.slice(2).split(/=(.*)/s, 2);
       const next = argv[i + 1];
       if (inline !== undefined) flags[key] = inline;
+      else if (BOOLEAN_FLAGS.has(key)) flags[key] = true;
       else if (next !== undefined && (!next.startsWith('-') || /^-\d/.test(next))) flags[key] = argv[++i];
       else flags[key] = true;
     } else positional.push(arg);

@@ -1,6 +1,14 @@
 import type { Filters, Persona, PersonaSummary, SearchResult, Shape, UserFixture, CustomerFixture } from './index.js';
 
 /** A file written by `shaqsiyad pull`: people saved for offline use. */
+/** Plain code-point order, the same as Python's default string sort, so offline pages match across SDKs. */
+function byCodePoint(a: string, b: string): number {
+  const x = Array.from(a ?? '', (c) => c.codePointAt(0)!);
+  const y = Array.from(b ?? '', (c) => c.codePointAt(0)!);
+  for (let i = 0; i < Math.min(x.length, y.length); i++) if (x[i] !== y[i]) return x[i] - y[i];
+  return x.length - y.length;
+}
+
 export interface Snapshot {
   version: 1;
   createdAt: string;
@@ -132,7 +140,7 @@ export class SnapshotStore {
   search(params: Filters & { sort?: string; page?: number; limit?: number }): SearchResult {
     const { sort, page = 1, limit = 20, ...filters } = params;
     const all = this.snapshot.people.filter((p) => matches(p, filters));
-    if (sort === 'name') all.sort((a, b) => a.fullName.localeCompare(b.fullName));
+    if (sort === 'name') all.sort((a, b) => byCodePoint(a.fullName, b.fullName));
     const pages = Math.max(1, Math.ceil(all.length / limit));
     return { total: all.length, page, limit, pages, sort: sort ?? 'snapshot', matched: null, results: all.slice((page - 1) * limit, page * limit).map(summarize) };
   }

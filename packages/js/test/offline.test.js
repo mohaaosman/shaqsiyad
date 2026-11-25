@@ -168,3 +168,11 @@ test('faker online preloads via the API and refuses an empty pool', async () => 
   assert.equal(faker.person.sex(), 'female');
   assert.throws(() => fakerFrom([]), /No people matched/);
 });
+
+test('offline sort=name uses code-point order, matching the Python SDK', async () => {
+  const names = ['Émile Dubois', 'Zainab Ali', 'Özil M', 'amina farah', 'Amina Farah'];
+  const snapshot = { version: 1, createdAt: '', baseUrl: BASE, params: {}, people: names.map((n, i) => person(i + 1, { fullName: n })) };
+  const api = new Shaqsiyad({ snapshot, fetch: noNetwork });
+  const sorted = (await api.search({ sort: 'name', limit: 10 })).results.map((p) => p.fullName);
+  assert.deepEqual(sorted, ['Amina Farah', 'Zainab Ali', 'amina farah', 'Émile Dubois', 'Özil M']);
+});

@@ -43,7 +43,9 @@ function load(client: Client, p: PeopleParameters): Promise<Persona[] | Record<s
   const promise = p.shape ? client.fixtures(p.shape, { ...p.filters, count, seed }) : client.random({ ...p.filters, count, seed });
   if (cacheable) {
     cache.set(key, promise);
-    promise.catch(() => cache.delete(key));
+    promise.catch(() => {
+      if (cache.get(key) === promise) cache.delete(key);
+    });
   }
   return promise;
 }

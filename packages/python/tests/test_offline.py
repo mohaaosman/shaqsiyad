@@ -176,5 +176,13 @@ class PullTest(unittest.TestCase):
         self.assertEqual(fake.person.sex(), "male")
 
 
+
+class SortParityTest(unittest.TestCase):
+    def test_sort_name_is_code_point_order_like_js(self):
+        names = ["Émile Dubois", "Zainab Ali", "Özil M", "amina farah", "Amina Farah"]
+        snap = dict(SNAP, people=[person(i + 1, fullName=n) for i, n in enumerate(names)])
+        result = Shaqsiyad(snapshot=snap).search(sort="name", limit=10)
+        self.assertEqual([p["fullName"] for p in result["results"]], ["Amina Farah", "Zainab Ali", "amina farah", "Émile Dubois", "Özil M"])
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-11-25
+
+### New SDKs — 0.1.0
+- **Ruby** (`shaqsiyad` gem, Ruby 3.1+, standard library only): `search_all` is a lazy `Enumerator`, snake_case filters.
+- **C#** (`Shaqsiyad` on NuGet, .NET 8): async everywhere, `IAsyncEnumerable` paging, `CancellationToken` on every call.
+
+### Figma plugin — 0.4.0
+- Fills component **text properties** on instances (`name`, `job`, `city`… matched by name, ignoring Figma's `#id` suffix).
+- **Fill variables**: with a local collection named `Shaqsiyad`, each frame gets its own mode with that person's values.
+
+### Fixes (from review)
+- JS CLI: `--all`, `--compact` and `--help` no longer swallow the next argument (`shaqsiyad search --all nurse` kept the query).
+- `shaqsiyad-react`: `<Avatar>` resolves host-relative avatar paths against the client's base URL; a stale failed request no longer evicts a newer cached one. Same cache fix in `shaqsiyad-storybook`.
+- Offline `sort=name` uses code-point order in JS, matching Python, so snapshots page the same in both.
+- JS client and MCP server: an empty `SHAQSIYAD_BASE_URL` falls back to the public API instead of producing relative URLs.
+
+### Repo
+- Python SDK now requires 3.10+ (3.9 is end-of-life and gone from CI runners). CI: Python 3.10/3.12/3.13, Ruby 3.3/3.4, .NET 8; actions moved to Node 24 versions.
+- Release workflow publishes to RubyGems and NuGet; [`RELEASING.md`](RELEASING.md) covers every registry.
+- Contract check now covers Go, PHP, Ruby and C# too.
+
 ## 0.3.0 — 2026-11-24
 
 ### `shaqsiyad` (npm) and `shaqsiyad` (PyPI) — 0.3.0

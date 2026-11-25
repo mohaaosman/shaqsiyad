@@ -176,7 +176,7 @@ export class Shaqsiyad {
 
   constructor(options: ClientOptions = {}) {
     const fromEnv = typeof process !== 'undefined' ? process.env?.SHAQSIYAD_BASE_URL : undefined;
-    this.baseUrl = (options.baseUrl ?? fromEnv ?? DEFAULT_BASE_URL).replace(/\/$/, '');
+    this.baseUrl = (options.baseUrl || fromEnv || DEFAULT_BASE_URL).replace(/\/$/, '');
     this.timeout = options.timeout ?? 30_000;
     this.retries = options.retries ?? 1;
     this.fetcher = options.fetch ?? ((input, init) => fetch(input, init));
